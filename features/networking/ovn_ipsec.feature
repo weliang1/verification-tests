@@ -237,7 +237,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %> |
       | ["metadata"]["namespace"]                                  | <%= project.name %>       |
       | ["metadata"]["name"]                                       | hostnw-pod-worker1        |
-      | ["spec"]["containers"][0]["securityContext"]["privileged"] | true                      |
     Then the step should succeed
     And a pod becomes ready with labels:
       | name=network-pod |
