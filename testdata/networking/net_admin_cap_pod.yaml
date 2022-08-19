@@ -16,6 +16,5 @@ spec:
       allowPrivilegeEscalation: false
       capabilities:
         add: ["NET_ADMIN"]
-        drop: ["ALL"]
   hostNetwork: true
   nodeName: node-name
