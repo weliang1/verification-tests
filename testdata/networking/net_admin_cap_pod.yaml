@@ -5,11 +5,17 @@ metadata:
   labels:
           name: network-pod
 spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: network-pod
     image: quay.io/openshifttest/hello-sdn@sha256:2af5b5ec480f05fda7e9b278023ba04724a3dd53a296afcd8c13f220dec52197
     securityContext:
+      allowPrivilegeEscalation: false
       capabilities:
         add: ["NET_ADMIN"]
+        drop: ["ALL"]
   hostNetwork: true
   nodeName: node-name
