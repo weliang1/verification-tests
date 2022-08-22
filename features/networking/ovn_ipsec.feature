@@ -207,49 +207,15 @@ Feature: OVNKubernetes IPsec related networking scenarios
   @singlenode
   Scenario: OCP-40569:SDN Allow enablement/disablement ipsec at runtime
     Given the env is using "OVNKubernetes" networkType
-    Given I store all worker nodes to the :workers clipboard
-    Given the default interface on nodes is stored in the :default_interface clipboard
     #Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
-    Given I have a project
-    Given I obtain test data file "networking/pod-for-ping.json"
-    When I run oc create over "pod-for-ping.json" replacing paths:
-      | ["spec"]["nodeName"] | <%= cb.workers[1].name %> |
-      | ["metadata"]["name"] | pod-worker1               |
+    Given I select a random node's host
+    And I run commands on the host:
+      | ip x s \| grep -i "mode transport" |
     Then the step should succeed
-    And a pod becomes ready with labels:
-      | name=hello-pod |
-    And evaluation of `pod.ip_url` is stored in the :test_pod_worker1 clipboard
-
-    Given I obtain test data file "networking/pod-for-ping.json"
-    When I run oc create over "pod-for-ping.json" replacing paths:
-      | ["spec"]["nodeName"]                 | <%= cb.workers[0].name %>                                                                                          |
-      | ["metadata"]["name"]                 | pod-worker0                                                                                                        |
-      | ["spec"]["containers"][0]["command"] | ["bash", "-c", "for f in {0..3600}; do curl <%= cb.test_pod_worker1 %>:8080 ; --connect-timeout 5; sleep 1; done"] |
-    Then the step should succeed
-    #Above command will curl "hello openshift" traffic every 1 second to worker1 test pod which is expected to cause ESP traffic generation across those nodes
-    And a pod becomes ready with labels:
-      | name=hello-pod |
-    #Make sure you are receiving ESP packets at the destination node. For that we will simulate a prviledged pod to allow tcpdumping
-    Given I obtain test data file "networking/net_admin_cap_pod.yaml"
-    When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
-      | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %> |
-      | ["metadata"]["namespace"]                                  | <%= project.name %>       |
-      | ["metadata"]["name"]                                       | hostnw-pod-worker1        |
-    Then the step should succeed
-    And a pod becomes ready with labels:
-      | name=network-pod |
-    And evaluation of `pod.name` is stored in the :hostnw_pod_worker1 clipboard
-    #capturing tcpdump for 2 seconds
-    Given I wait up to 60 seconds for the steps to pass:
-    """
-    When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
-      | bash | -c | timeout  --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
-    Then the step should succeed
-    And the output should contain "ESP"
-    """
-
+    #We need to make sure some mode is chosen and supported only for now is transport
+    And the output should contain "mode transport"
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
