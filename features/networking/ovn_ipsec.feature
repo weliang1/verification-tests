@@ -212,7 +212,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
     Given I wait up to 60 seconds for the steps to pass:
     """
-    Given I wait up to 60 seconds for the steps to pass:
     Given I select a random node's host
     And I run commands on the host:
       | ip x s \| grep -i "mode transport" |
