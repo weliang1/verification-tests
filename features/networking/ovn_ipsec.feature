@@ -222,7 +222,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
-    Given I wait up to 60 seconds for the steps to pass:
+    Given I wait up to 90 seconds for the steps to pass:
     """
     Given I select a random node's host
     And I run commands on the host:
