@@ -207,7 +207,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
   @singlenode
   Scenario: OCP-40569:SDN Allow enablement/disablement ipsec at runtime
     Given the env is using "OVNKubernetes" networkType
-    #Enable ipsec through CNO
+    # Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
     Given I wait up to 60 seconds for the steps to pass:
@@ -216,10 +216,9 @@ Feature: OVNKubernetes IPsec related networking scenarios
     And I run commands on the host:
       | ip x s \| grep -i "mode transport" |
     Then the step should succeed
-    """
-    #We need to make sure some mode is chosen and supported only for now is transport
     And the output should contain "mode transport"
-    #Disable ipsec through CNO
+    """
+    # Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
     Given I wait up to 90 seconds for the steps to pass:
@@ -227,5 +226,5 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given I select a random node's host
     And I run commands on the host:
       | ip x s \| grep -i "mode transport" |
-    Then the step should fail
+    Then the output should not contain "mode transport"
     """
