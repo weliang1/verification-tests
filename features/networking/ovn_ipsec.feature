@@ -226,6 +226,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given I select a random node's host
     And I run commands on the host:
       | ip x s \| grep -i "mode transport" |
-    Then the step should succeed
+    Then the step should fail
     Then the output should not contain "mode transport"
     """
