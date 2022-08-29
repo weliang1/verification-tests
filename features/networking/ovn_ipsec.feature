@@ -286,7 +286,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Then the step should succeed
     And the output should contain "ESP"
     """
-    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
+    Given admin ensures "<%= cb.north_leader.name %>" pod is deleted from the "openshift-ovn-kubernetes" project    
     Given I store the ovnkube-master "north" leader pod in the clipboard
     Given I wait up to 60 seconds for the steps to pass:
     """
