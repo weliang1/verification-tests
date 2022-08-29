@@ -344,16 +344,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Above command will curl "hello openshift" traffic every 1 second to worker1 test pod which is expected to cause ESP traffic generation across those nodes
     And a pod becomes ready with labels:
       | name=hello-pod |
-    #Make sure you are receiving ESP packets at the destination node. For that we will simulate a prviledged pod to allow tcpdumping
-    Given I obtain test data file "networking/net_admin_cap_pod.yaml"
-    When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
-      | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %> |
-      | ["metadata"]["namespace"]                                  | <%= project.name %>       |
-      | ["metadata"]["name"]                                       | hostnw-pod-worker1        |
-      | ["spec"]["containers"][0]["securityContext"]["privileged"] | true                      |
-    Then the step should succeed
-    And a pod becomes ready with labels:
-      | name=network-pod |
-    And evaluation of `pod.name` is stored in the :hostnw_pod_worker1 clipboard
+
     
     Given 15000 seconds have passed
