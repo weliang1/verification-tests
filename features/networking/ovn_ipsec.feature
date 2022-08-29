@@ -285,6 +285,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Then the step should succeed
     And the output should contain "ESP"
     """
+    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
     Given I store the ovnkube-master "north" leader pod in the clipboard
     Given I wait up to 60 seconds for the steps to pass:
     """
@@ -303,6 +304,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Then the step should succeed
     And the output should not contain "ESP"
     """
+    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
     Given I store the ovnkube-master "north" leader pod in the clipboard
     Given I wait up to 60 seconds for the steps to pass:
     """
