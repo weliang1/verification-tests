@@ -207,3 +207,18 @@ Given /^operator #{QUOTED} becomes #{NO_SPACE_STR}(?: within #{NUMBER} seconds)?
     logger.dedup_flush
   end
 end
+
+Given /^I have a project with proper privilege$/ do
+  step %Q/I have a project/
+  if env.version_ge("4.12", user: user)
+    step %Q/I run the :label admin command with:/, table(%{
+      | resource  | namespace/<%= project.name %>                        |
+      | overwrite | true                                                 |
+      | key_val   | security.openshift.io/scc.podSecurityLabelSync=false |
+      | key_val   | pod-security.kubernetes.io/enforce=privileged        |
+      | key_val   | pod-security.kubernetes.io/audit=privileged          |
+      | key_val   | pod-security.kubernetes.io/warn=privileged           |
+      })
+    step %Q/the step should succeed/
+  end
+end
