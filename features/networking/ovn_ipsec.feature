@@ -249,6 +249,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
     Given I have a project with proper privilege
+    And evaluation of `project.name` is stored in the :hello_pod_project clipboard
     Given I obtain test data file "networking/pod-for-ping.json"
     When I run oc create over "pod-for-ping.json" replacing paths:
       | ["spec"]["nodeName"] | <%= cb.workers[1].name %> |
@@ -271,7 +272,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given I obtain test data file "networking/net_admin_cap_pod.yaml"
     When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
       | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %> |
-      | ["metadata"]["namespace"]                                  | <%= project.name %>       |
+      | ["metadata"]["namespace"]                                  | <%= cb.hello_pod_project %>       |
       | ["metadata"]["name"]                                       | hostnw-pod-worker1        |
       | ["spec"]["containers"][0]["securityContext"]["privileged"] | true                      |
     Then the step should succeed
@@ -298,7 +299,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
     Given I switch to the first user
-    And I use the "<%= project.name %>" project
+    And I use the "<%= cb.hello_pod_project %>" project
     Given I wait up to 120 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
