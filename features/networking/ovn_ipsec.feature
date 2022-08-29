@@ -281,7 +281,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given I wait up to 90 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
-      | bash | -c | timeout -v --preserve-status 2 tcpdump -i <%= cb.default_interface %> esp |
+      | bash | -c | timeout -v --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
     Then the step should succeed
     And the output should contain "ESP"
     """
