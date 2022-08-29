@@ -1,23 +1,11 @@
   Feature: setup cluster scripts
   
   # @author weliang@redhat.com
-  # @case_id OCP-44445
-  @admin
-  @destructive
-  @inactive
-  @network-ovnkubernetes @network-openshiftsdn @ipsec
-  @4.12 @4.11
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
-  @proxy @noproxy @disconnected @connected
-  @singlenode
-  Scenario: OCP-40569:SDN Allow enablement/disablement ipsec at runtime
-    Given the env is using "OVNKubernetes" networkType
+  # @case_id OCP-11111
+  Scenario: OCP-11111:Create two pods crossing two nodes, first pod keep curling secondary pod
     Given I store all worker nodes to the :workers clipboard
     Given the default interface on nodes is stored in the :default_interface clipboard
-    #Enable ipsec through CNO
-    Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
-      | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
+    
     Given I have a project
     Given I obtain test data file "networking/pod-for-ping.json"
     When I run oc create over "pod-for-ping.json" replacing paths:
