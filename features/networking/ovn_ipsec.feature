@@ -297,6 +297,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
+    Given I switch to the first user
     And I use the "<%= project.name %>" project
     Given I wait up to 120 seconds for the steps to pass:
     """
