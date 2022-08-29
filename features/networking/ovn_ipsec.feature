@@ -248,13 +248,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
-    Given I store the ovnkube-master "north" leader pod in the clipboard
-    Given I wait up to 90 seconds for the steps to pass:
-    """
-    And admin executes on the pod "northd" container:
-      | bash | -c | ovn-nbctl --no-leader-only get nb_global . ipsec \| grep true |
-    And the output should contain "true"
-    """
     Given I have a project with proper privilege
     Given I obtain test data file "networking/pod-for-ping.json"
     When I run oc create over "pod-for-ping.json" replacing paths:
@@ -285,29 +278,35 @@ Feature: OVNKubernetes IPsec related networking scenarios
     And a pod becomes ready with labels:
       | name=network-pod |
     And evaluation of `pod.name` is stored in the :hostnw_pod_worker1 clipboard
-    Given I wait up to 60 seconds for the steps to pass:
+    Given I wait up to 90 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
       | bash | -c | timeout -v --preserve-status 2 tcpdump -i <%= cb.default_interface %> esp |
     Then the step should succeed
     And the output should contain "ESP"
     """
+    Given I store the ovnkube-master "north" leader pod in the clipboard
+    Given I wait up to 60 seconds for the steps to pass:
+    """
+    And admin executes on the pod "northd" container:
+      | bash | -c | ovn-nbctl --no-leader-only get nb_global . ipsec \| grep true |
+    And the output should contain "true"
+    """
      
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
-    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
-    Given I store the ovnkube-master "north" leader pod in the clipboard
     Given I wait up to 90 seconds for the steps to pass:
+    """
+    When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
+      | bash | -c | timeout --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
+    Then the step should succeed
+    And the output should not contain "ESP"
+    """
+    Given I store the ovnkube-master "north" leader pod in the clipboard
+    Given I wait up to 60 seconds for the steps to pass:
     """
     And admin executes on the pod "northd" container:
       | bash | -c | ovn-nbctl --no-leader-only get nb_global . ipsec \| grep false |
     And the output should contain "false"
-    """
-    Given I wait up to 60 seconds for the steps to pass:
-    """
-    When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
-      | bash | -c | timeout -v --preserve-status 2 tcpdump -i <%= cb.default_interface %> esp |
-    Then the step should succeed
-    And the output should not contain "ESP"
     """
