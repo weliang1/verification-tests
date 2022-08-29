@@ -1,3 +1,5 @@
+  Feature: setup cluster scripts
+  
   # @author weliang@redhat.com
   # @case_id OCP-44445
   @admin
