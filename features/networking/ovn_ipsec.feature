@@ -279,26 +279,22 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | name=network-pod |
     And evaluation of `pod.name` is stored in the :hostnw_pod_worker1 clipboard
     #capturing tcpdump for 2 seconds
-    Given I wait up to 60 seconds for the steps to pass:
+    Given I wait up to 90 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
       | bash | -c | timeout  --preserve-status 2 tcpdump -i <%= cb.default_interface %> esp |
     Then the step should succeed
-    # Example ESP packet un-encrypted will look like 16:37:16.309297 IP ip-10-0-x-x.us-east-2.compute.internal > ip-10-0-x-x.us-east-2.compute.internal: ESP(spi=0xf50c771c,seq=0xfaad)
-    And the output should match:
-      | <%= cb.workers[0].name %>.* > <%= cb.workers[1].name %>.*: ESP |
+    And the output should contain "ESP"
     """
     
     
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
-    Given I wait up to 60 seconds for the steps to pass:
+    Given I wait up to 90 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hostnw_pod_worker1 %>" pod:
       | bash | -c | timeout  --preserve-status 2 tcpdump -i <%= cb.default_interface %> esp |
     Then the step should succeed
-    # Example ESP packet un-encrypted will look like 16:37:16.309297 IP ip-10-0-x-x.us-east-2.compute.internal > ip-10-0-x-x.us-east-2.compute.internal: ESP(spi=0xf50c771c,seq=0xfaad)
-    And the output should not match:
-      | <%= cb.workers[0].name %>.* > <%= cb.workers[1].name %>.*: ESP |
+    And the output should not contain "ESP"
     """
