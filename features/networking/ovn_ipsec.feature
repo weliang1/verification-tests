@@ -296,6 +296,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
+    Given I store the ovnkube-master "north" leader pod in the clipboard
     Given I wait up to 90 seconds for the steps to pass:
     """
     And admin executes on the pod "northd" container:
