@@ -293,7 +293,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | bash | -c | ovn-nbctl --no-leader-only get nb_global . ipsec \| grep true |
     And the output should contain "true"
     """
-    Given 15000 seconds have passed
     
     #Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
