@@ -325,7 +325,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
-    Given I have a project with proper privilege
+    Given I have a project
     Given I obtain test data file "networking/pod-for-ping.json"
     When I run oc create over "pod-for-ping.json" replacing paths:
       | ["spec"]["nodeName"] | <%= cb.workers[1].name %> |
