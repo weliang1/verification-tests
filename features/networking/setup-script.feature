@@ -2,6 +2,7 @@
   
   # @author weliang@redhat.com
   # @case_id OCP-11111
+  @admin
   Scenario: OCP-11111:Create two pods crossing two nodes, first pod keep curling secondary pod
     Given I store all worker nodes to the :workers clipboard
     Given the default interface on nodes is stored in the :default_interface clipboard
