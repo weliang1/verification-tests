@@ -28,7 +28,7 @@
     Given I obtain test data file "networking/multus-cni/Pods/multus-default-route-pod.yaml"
     When I run the :create client command with:
       | f | multus-default-route-pod.yaml |
-      | n | <%= project.name %>           |
+      | n | multus-upgrade                |
     Then the step should succeed
     And the pod named "multus-default-route-pod" becomes ready
 
