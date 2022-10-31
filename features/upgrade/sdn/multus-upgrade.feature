@@ -17,7 +17,7 @@
     When I run the :new_project client command with:
       | project_name | multus-upgrade |
     Then the step should succeed
-    Then the appropriate pod security labels are applied to the namespace
+    And the appropriate pod security labels are applied to the "multus-upgrade" namespace
     When I use the "multus-upgrade" project
     Given I obtain test data file "networking/multus-cni/NetworkAttachmentDefinitions/ipam-static.yaml"
     When I run oc create as admin over "ipam-static.yaml" replacing paths:
