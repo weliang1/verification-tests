@@ -28,12 +28,12 @@
     # Create a pod absorbing above net-attach-def
     Given I obtain test data file "networking/multus-cni/Pods/generic_multus_pod_upgrade.yaml"
     When I run oc create over "generic_multus_pod_upgrade.yaml" replacing paths:
-      | ["items"][0]["spec"]["template"]["metadata"]["labels"]["name"]                             | multus-default-route-pod |
+      | ["items"][0]["spec"]["template"]["metadata"]["labels"]["name"]                             | bridge-static-pod1 |
       | ["items"][0]["metadata"]["name"]                                                           | bridge-static-pod1       |
       | ["items"][0]["spec"]["template"]["metadata"]["annotations"]["k8s.v1.cni.cncf.io/networks"] | bridge-static            |
       | ["items"][0]["spec"]["template"]["spec"]["containers"][0]["name"]                          | bridge-static            |
     Then the step should succeed
-    And the pod named "multus-default-route-pod" becomes ready
+    And the pod named "bridge-static-pod1" becomes ready
 
     # Check created pod has correct ip address on interface net1
     When I execute on the pod:
