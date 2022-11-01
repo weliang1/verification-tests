@@ -56,7 +56,7 @@
     Given I switch to cluster admin pseudo user
     When I use the "multus-upgrade" project
     Given a pod becomes ready with labels:
-      | multus-default-route-pod |
+      | name=bridge-static-pod1 |
     # Check created pod has correct ip address on interface net1
     When I execute on the pod:
       | ip | a |
