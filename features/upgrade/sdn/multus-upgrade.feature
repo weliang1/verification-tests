@@ -26,10 +26,12 @@
       | ["spec"]["config"]        | '{ "cniVersion": "0.3.1", "type": "bridge", "ipam": {"type":"static","addresses": [{"address": "22.2.2.22/24","gateway": "22.2.2.1"}]}}' |
     Then the step should succeed
     # Create a pod absorbing above net-attach-def
-    Given I obtain test data file "networking/multus-cni/Pods/multus-default-route-pod.yaml"
-    When I run the :create client command with:
-      | f | multus-default-route-pod.yaml |
-      | n | multus-upgrade                |
+    Given I obtain test data file "networking/multus-cni/Pods/generic_multus_pod_upgrade.yaml"
+    When I run oc create over "generic_multus_pod_upgrade.yaml" replacing paths:
+      | ["items"][0]["spec"]["template"]["metadata"]["labels"]["name"]                             | multus-default-route-pod |
+      | ["items"][0]["metadata"]["name"]                                                           | bridge-static-pod1       |
+      | ["items"][0]["spec"]["template"]["metadata"]["annotations"]["k8s.v1.cni.cncf.io/networks"] | bridge-static            |
+      | ["items"][0]["spec"]["template"]["spec"]["containers"][0]["name"]                          | bridge-static            |
     Then the step should succeed
     And the pod named "multus-default-route-pod" becomes ready
 
