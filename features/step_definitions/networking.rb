@@ -1,6 +1,6 @@
 Given /^the joint network CIDR is updateded in the node "([^"]*)"$/ do | node_name |
   ensure_admin_tagged
-  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.items[*].metadata.annotations.k8s\.ovn\.org/node-gateway-router-lrp-ifaddr")
+  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.items[*].metadata.annotations.k8s.ovn.org/node-gateway-router-lrp-ifaddr")
   unless @result[:response].include? "100.66.0"
     logger.warn "JointNetworkCIDR is not updated on the cluster"
     skip_this_scenario
