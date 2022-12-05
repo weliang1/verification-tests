@@ -15,4 +15,4 @@ Feature: SDN update joint network CIDR migration testing
      # | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"v4InternalSubnet":"100.66.0.0/16" }}}} |
     Given I store the masters in the :masters clipboard
     And the Internal IP of node "<%= cb.masters[0].name %>" is stored in the :master0_ip clipboard
-    Given the joint network CIDR is patched in the node
+    Given the joint network CIDR is patched in the node "<%= cb.masters[0].name %>"
