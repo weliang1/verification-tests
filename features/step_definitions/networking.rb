@@ -1621,7 +1621,7 @@ end
 
 Given /^the plugin is openshift-ovs-networkpolicy on the cluster$/ do
   ensure_admin_tagged
-  @result = _admin.cli_exec(:get, resource: "network.operator", output: "jsonpath={.items[*].pluginName}")
+  @result = admin.cli_exec(:get, resource: "network.operator", output: "jsonpath={.items[*].pluginName}")
   if @result[:response] != "redhat/openshift-ovs-networkpolicy"
     raise "Unable to find corresponding plugin name" 
   end
