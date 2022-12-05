@@ -1,3 +1,21 @@
+Given /^the plugin is openshift-ovs-networkpolicy on the cluster$/ do
+  ensure_admin_tagged
+  @result = admin.cli_exec(:get, resource: "clusternetwork", output: "jsonpath={.items[*].pluginName}")
+  if @result[:response] != "redhat/openshift-ovs-networkpolicy"
+    raise "Unable to find corresponding plugin name" 
+    skip_this_scenario
+  end
+end
+
+Given /^the joint network CIDR is patched in the node "([^"]*)"$/ do | node_name |
+  ensure_admin_tagged
+  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.spec.defaultNetwork.ovnKubernetesConfig.v4InternalSubnet}")
+  unless @result[:response].include? "100.66.0"
+    logger.warn "JointNetworkCIDR is not patched"
+    skip_this_scenario
+  end
+end
+
 
 Given /^I run the ovs commands on the host:$/ do | table |
   ensure_admin_tagged
@@ -1619,10 +1637,4 @@ Given /^I store kubernetes elected leader pod for ovnkube-master in the#{OPT_SYM
   cb[cb_leader_name ] = target_pod
 end
 
-Given /^the plugin is openshift-ovs-networkpolicy on the cluster$/ do
-  ensure_admin_tagged
-  @result = admin.cli_exec(:get, resource: "clusternetwork", output: "jsonpath={.items[*].pluginName}")
-  if @result[:response] != "redhat/openshift-ovs-networkpolicy"
-    raise "Unable to find corresponding plugin name" 
-  end
-end
+
