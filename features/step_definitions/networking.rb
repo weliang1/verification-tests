@@ -1619,7 +1619,7 @@ Given /^I store kubernetes elected leader pod for ovnkube-master in the#{OPT_SYM
   cb[cb_leader_name ] = target_pod
 end
 
-Given /^plugin is openshift-ovs-networkpolicy on the cluster$/ do
+Given /^the plugin is openshift-ovs-networkpolicy on the cluster$/ do
   ensure_admin_tagged
   @result = _admin.cli_exec(:get, resource: "network.operator", output: "jsonpath={.items[*].pluginName}")
   if @result[:response] != "redhat/openshift-ovs-networkpolicy"
