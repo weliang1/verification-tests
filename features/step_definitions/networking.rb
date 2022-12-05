@@ -7,9 +7,9 @@ Given /^the plugin is openshift-ovs-networkpolicy on the cluster$/ do
   end
 end
 
-Given /^the joint network CIDR is patched in the node "([^"]*)"$/ do | node_name |
+Given /^the joint network CIDR is patched in the node$/ do 
   ensure_admin_tagged
-  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.spec.defaultNetwork.ovnKubernetesConfig.v4InternalSubnet}")
+  @result = admin.cli_exec(:get, resource: "network.operator", output: "jsonpath={.spec.defaultNetwork.ovnKubernetesConfig.v4InternalSubnet}")
   unless @result[:response].include? "100.66.0"
     logger.warn "JointNetworkCIDR is not patched"
     skip_this_scenario
