@@ -265,6 +265,24 @@ Feature: Egress compoment upgrade testing
   @hypershift-hosted
   Scenario: Check sdn egressip is functional post upgrade
     Given the cluster is not migration from sdn plugin
+    Given the env is using "OpenShiftSDN" networkType
+    Given I run the :get admin command with:
+      | resource      | hostsubnet                                  |
+      | o             | jsonpath={.items[?(@.egressCIDRs)].host}    |
+    Then the step should succeed
+    And evaluation of `@result[:response].split(" ")` is stored in the :egress_nodes clipboard
+    And I register clean-up steps:
+    """
+    as admin I successfully merge patch resource "netnamespace/sdn-egressip-upgrade1" with:
+      | {"egressIPs": null } |
+    as admin I successfully merge patch resource "netnamespace/sdn-egressip-upgrade2" with:
+      | {"egressIPs": null } |
+    as admin I successfully merge patch resource "hostsubnet/<%= cb.egress_nodes[0] %>" with:
+      | {"egressCIDRs":null,"egressIPs": null}   |
+    as admin I successfully merge patch resource "hostsubnet/<%= cb.egress_nodes[1] %>" with:
+      | {"egressCIDRs":null,"egressIPs": null}   |
+    """
+
     Given I save ipecho url to the clipboard
     Given I switch to cluster admin pseudo user
 
@@ -315,19 +333,32 @@ Feature: Egress compoment upgrade testing
   Scenario: Check sdn egressip is functional post upgrade
   Given the cluster is not migration from sdn plugin
   Given I save ipecho url to the clipboard
-  Given I switch to cluster admin pseudo user
-  When I use the "egressip-upgrade1" project
+  Given I switch to cluster admin pseudo use
+
+  #Get configured EgressIPs
+  When I run the :get admin command with:
+    | resource       | egressip             |
+    | resource_name  | sdn-egressip-upgrade1    |
+    | o              | jsonpath={.status.items[*]} |
+  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip1 clipboard
+  When I run the :get admin command with:
+    | resource       | egressip             |
+    | resource_name  | sdn-egressip-upgrade2    |
+    | o              | jsonpath={.status.items[*]} |
+  And `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip2 clipboard
+  When I use the "sdn-egressip-upgrade1" project
   Given status becomes :running of 1 pod labeled:
     | name=test-pods |
   And evaluation of `pod(0).name` is stored in the :pod1 clipboard
-
-  When I run the :get admin command with:
-    | resource       | egressip                    |
-    | resource_name  | egressip                    |
-    | o              | jsonpath={.status.items[*]} |
-  Then the step should succeed
-  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :valid_ip clipboard
-  When I execute on the "<%= cb.pod1 %>" pod:
+  And I execute on the "<%= cb.pod1 %>" pod:
     | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
   Then the step should succeed
-  And the output should contain "<%= cb.valid_ip %>"
+  And the output should contain "<%= cb.egress_ip1 %>"
+  When I use the "sdn-egressip-upgrade2" project
+  Given status becomes :running of 1 pod labeled:
+    | name=test-pods |
+  And evaluation of `pod(1).name` is stored in the :pod2 clipboard
+  And I execute on the "<%= cb.pod2 %>" pod:
+    | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
+  Then the step should succeed
+  And the output should contain "<%= cb.egress_ip2 %>"
