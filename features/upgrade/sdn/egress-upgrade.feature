@@ -347,7 +347,7 @@ Feature: Egress compoment upgrade testing
     | resource_name  | egressip-sdn-egressip-upgrade2    |
     | o              | jsonpath={.status.items[*]} |
   Then the step should succeed
-  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the ::egress_ip2 clipboard
+  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip2 clipboard
   When I use the "sdn-egressip-upgrade1" project
   Given status becomes :running of 1 pod labeled:
     | name=test-pods |
@@ -364,3 +364,18 @@ Feature: Egress compoment upgrade testing
     | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
   Then the step should succeed
   And the output should contain "<%= cb.egress_ip2 %>"
+  # Remove label from egressip node and delete egress ip object
+  Given admin ensures "egress_ip1" egress_ip is deleted after scenario
+  Given admin ensures "egress_ip2" egress_ip is deleted after scenario
+
+  When I run the :get admin command with:
+    | resource       | node                               |
+    | l              | k8s.ovn.org/egress-assignable      |
+    | o              | jsonpath={.items[*].metadata.name} |
+  And evaluation of `@result[:response].chomp` is stored in the :egress_node clipboard
+  When I run the :label admin command with:
+    | resource | node                               |
+    | name     | <%= cb.egress_node %>              |
+    | key_val  | k8s.ovn.org/egress-assignable-     |
+  Then the step should succeed
+  
