@@ -265,24 +265,6 @@ Feature: Egress compoment upgrade testing
   @hypershift-hosted
   Scenario: Check sdn egressip is functional post upgrade
     Given the cluster is not migration from sdn plugin
-    Given the env is using "OpenShiftSDN" networkType
-    Given I run the :get admin command with:
-      | resource      | hostsubnet                                  |
-      | o             | jsonpath={.items[?(@.egressCIDRs)].host}    |
-    Then the step should succeed
-    And evaluation of `@result[:response].split(" ")` is stored in the :egress_nodes clipboard
-    And I register clean-up steps:
-    """
-    as admin I successfully merge patch resource "netnamespace/sdn-egressip-upgrade1" with:
-      | {"egressIPs": null } |
-    as admin I successfully merge patch resource "netnamespace/sdn-egressip-upgrade2" with:
-      | {"egressIPs": null } |
-    as admin I successfully merge patch resource "hostsubnet/<%= cb.egress_nodes[0] %>" with:
-      | {"egressCIDRs":null,"egressIPs": null}   |
-    as admin I successfully merge patch resource "hostsubnet/<%= cb.egress_nodes[1] %>" with:
-      | {"egressCIDRs":null,"egressIPs": null}   |
-    """
-
     Given I save ipecho url to the clipboard
     Given I switch to cluster admin pseudo user
 
