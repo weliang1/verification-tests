@@ -104,10 +104,7 @@
   @proxy @noproxy @disconnected @connected
   @hypershift-hosted
   Scenario: Check the multicast works well after upgrade
-    if env.version_le("4.11", user: user)
-      Given the cluster is not migration from sdn plugin
-    end
-    Given the cluster is not migration from sdn plugin
+    Given the cluster is migrated from sdn plugin
     Given I switch to cluster admin pseudo user
     When I use the "multicast-upgrade" project
     Given 3 pods become ready with labels:
