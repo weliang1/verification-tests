@@ -337,13 +337,13 @@ Feature: Egress compoment upgrade testing
 
   #Get configured EgressIPs
   When I run the :get admin command with:
-    | resource       | sdn-egressip-upgrade1             |
-    | resource_name  | sdn-egressip-upgrade1    |
+    | resource       | egressip             |
+    | resource_name  | egressip-sdn-egressip-upgrade1    |
     | o              | jsonpath={.status.items[*]} |
   And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip1 clipboard
   When I run the :get admin command with:
-    | resource       | sdn-egressip-upgrade2            |
-    | resource_name  | sdn-egressip-upgrade2    |
+    | resource       | egressip            |
+    | resource_name  | egressip-sdn-egressip-upgrade2    |
     | o              | jsonpath={.status.items[*]} |
   And `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip2 clipboard
   When I use the "sdn-egressip-upgrade1" project
