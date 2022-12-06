@@ -333,7 +333,7 @@ Feature: Egress compoment upgrade testing
   Scenario: Check sdn egressip is functional post upgrade
   Given the cluster is not migration from sdn plugin
   Given I save ipecho url to the clipboard
-  Given I switch to cluster admin pseudo use
+  Given I switch to cluster admin pseudo user
 
   #Get configured EgressIPs
   When I run the :get admin command with:
