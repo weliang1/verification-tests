@@ -340,12 +340,14 @@ Feature: Egress compoment upgrade testing
     | resource       | egressip             |
     | resource_name  | egressip-sdn-egressip-upgrade1    |
     | o              | jsonpath={.status.items[*]} |
+  Then the step should succeed
   And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip1 clipboard
   When I run the :get admin command with:
     | resource       | egressip            |
     | resource_name  | egressip-sdn-egressip-upgrade2    |
     | o              | jsonpath={.status.items[*]} |
-  And `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip2 clipboard
+  Then the step should succeed
+  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the ::egress_ip2 clipboard
   When I use the "sdn-egressip-upgrade1" project
   Given status becomes :running of 1 pod labeled:
     | name=test-pods |
