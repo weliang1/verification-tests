@@ -315,3 +315,37 @@ Feature: Egress compoment upgrade testing
       | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
     Then the step should succeed
     And the output should contain "<%= cb.egress_ip2 %>"
+
+  # @author huirwang@redhat.com
+  # @case_id OCP-45349
+  @admin
+  @flaky
+  @upgrade-check
+  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7
+  @vsphere-ipi
+  @vsphere-upi
+  @qeci
+  @upgrade
+  @network-openshiftsdn
+  @proxy @noproxy @disconnected @connected
+  @heterogeneous @arm64 @amd64
+  @hypershift-hosted
+  Scenario: Check sdn egressip is functional post upgrade
+  Given the cluster is not migration from sdn plugin
+  Given I save ipecho url to the clipboard
+  Given I switch to cluster admin pseudo user
+  When I use the "egressip-upgrade1" project
+  Given status becomes :running of 1 pod labeled:
+    | name=test-pods |
+  And evaluation of `pod(0).name` is stored in the :pod1 clipboard
+
+  When I run the :get admin command with:
+    | resource       | egressip                    |
+    | resource_name  | egressip                    |
+    | o              | jsonpath={.status.items[*]} |
+  Then the step should succeed
+  And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :valid_ip clipboard
+  When I execute on the "<%= cb.pod1 %>" pod:
+    | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
+  Then the step should succeed
+  And the output should contain "<%= cb.valid_ip %>"
