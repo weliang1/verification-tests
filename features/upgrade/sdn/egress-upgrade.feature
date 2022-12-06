@@ -375,7 +375,12 @@ Feature: Egress compoment upgrade testing
   And evaluation of `@result[:response].chomp` is stored in the :egress_node clipboard
   When I run the :label admin command with:
     | resource | node                               |
-    | name     | <%= cb.egress_node %>              |
+    | name     | <%= cb.egress_node[0] %>              |
+    | key_val  | k8s.ovn.org/egress-assignable-     |
+  Then the step should succeed
+    When I run the :label admin command with:
+    | resource | node                               |
+    | name     | <%= cb.egress_node[1] %>              |
     | key_val  | k8s.ovn.org/egress-assignable-     |
   Then the step should succeed
   
