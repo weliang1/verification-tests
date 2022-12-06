@@ -265,7 +265,6 @@ Feature: Egress compoment upgrade testing
   @hypershift-hosted
   Scenario: Check sdn egressip is functional post upgrade
     Given the cluster is not migration from sdn plugin		
-    Given the env is using "OpenShiftSDN" networkType
     Given I run the :get admin command with:
       | resource      | hostsubnet                                  |
       | o             | jsonpath={.items[?(@.egressCIDRs)].host}    |
