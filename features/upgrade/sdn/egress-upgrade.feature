@@ -472,7 +472,7 @@ Feature: Egress compoment upgrade testing
   @heterogeneous @arm64 @amd64
   @hypershift-hosted
   Scenario: Check sdn2ovn egressip is functional post upgrade
-  Given the env is using "OVNKubernetes" networkType
+  Given the cluster is migrated from sdn
   Given I save ipecho url to the clipboard
   Given I switch to cluster admin pseudo user
   #Get configured EgressIPs
