@@ -1,3 +1,14 @@
+Given /^the cluster is migrated from sdn$/ do
+  ensure_admin_tagged
+  _admin = admin
+  @result = _admin.cli_exec(:get, resource: "network.operator", output: "jsonpath={.items[*].spec.migration.networkType}")
+  unless @result[:stdout]["OVNKubernetes"]
+    logger.warn "the cluster is not migration from sdn plugin"
+    logger.warn "We will skip this scenario"
+    skip_this_scenario
+  end
+end
+
 Given /^the joint network CIDR is updateded in the node "([^"]*)"$/ do | node_name |
   ensure_admin_tagged
   @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.metadata.annotations.k8s\.ovn\.org/node-gateway-router-lrp-ifaddr}")
