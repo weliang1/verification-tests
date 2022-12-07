@@ -512,7 +512,8 @@ Feature: Egress compoment upgrade testing
     | resource       | node                               |
     | l              | k8s.ovn.org/egress-assignable      |
     | o              | jsonpath={.items[*].metadata.name} |
-  And evaluation of `@result[:response].chomp` is stored in the :egress_node clipboard
+  Then the step should succeed
+  And evaluation of `@result[:response].split(" ")` is stored in the :egress_node clipboard
   When I run the :label admin command with:
     | resource | node                               |
     | name     | <%= cb.egress_node[0] %>              |
