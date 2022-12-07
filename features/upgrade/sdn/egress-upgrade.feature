@@ -505,8 +505,7 @@ Feature: Egress compoment upgrade testing
   Then the step should succeed
   And the output should contain "<%= cb.egress_ip2 %>"
   # Remove label from egressip node and delete egress ip object
-  Given admin ensures "egress_ip1" egress_ip is deleted after scenario
-  Given admin ensures "egress_ip2" egress_ip is deleted after scenario
+  Given admin ensures "egress" egress_ip is deleted after scenario
 
   When I run the :get admin command with:
     | resource       | node                               |
