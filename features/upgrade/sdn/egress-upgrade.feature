@@ -384,7 +384,7 @@ Feature: Egress compoment upgrade testing
     | key_val  | k8s.ovn.org/egress-assignable-     |
   Then the step should succeed
   
-    # @author weliang@redhat.com
+  # @author weliang@redhat.com
   @admin
   @flaky
   @upgrade-prepare
@@ -473,6 +473,8 @@ Feature: Egress compoment upgrade testing
   @hypershift-hosted
   Scenario: Check sdn2ovn egressip is functional post upgrade
   Given the env is using "OVNKubernetes" networkType
+  Given I save ipecho url to the clipboard
+  Given I switch to cluster admin pseudo user
   #Get configured EgressIPs
   When I run the :get admin command with:
     | resource       | egressip             |
