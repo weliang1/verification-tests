@@ -36,4 +36,4 @@ Feature: SDN2ovn migration testing
       | resource_name  | <%= cb.masters[0].name %>                   |
       | o        | jsonpath={.metadata.annotations.k8s\.ovn\.org/node-gateway-router-lrp-ifaddr} |
     Then the step should succeed
-    Then the outputs should contain ":"100.66.0"
+    Then the outputs should contain "{"ipv4":"100.66.0."
