@@ -10,8 +10,8 @@ Feature: SDN2ovn migration testing
   @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
   Scenario: Check joint network CIDR after migration - prepare
-    #Given the plugin is openshift-ovs-networkpolicy on the cluster
-    #Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
+    Given the plugin is openshift-ovs-networkpolicy on the cluster
+    Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
      # | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"v4InternalSubnet":"100.66.0.0/16" }}}} |
     Given I store the masters in the :masters clipboard
     And the Internal IP of node "<%= cb.masters[0].name %>" is stored in the :master0_ip clipboard
