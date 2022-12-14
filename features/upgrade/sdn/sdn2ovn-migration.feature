@@ -30,4 +30,9 @@ Feature: SDN2ovn migration testing
   Scenario: Check joint network CIDR after migration
   Given I store the masters in the :masters clipboard
   And the Internal IP of node "<%= cb.masters[0].name %>" is stored in the :master0_ip clipboard
-  Given the joint network CIDR is updateded in the node "<%= cb.masters[0].name %>"
+  #Given the joint network CIDR is updateded in the node "<%= cb.masters[0].name %>"
+      When I run the :get admin command with:
+      |resource| "<%= cb.masters[0].name %> |
+      | o        | jsonpath={.metadata.annotations.k8s\.ovn\.org/node-gateway-router-lrp-ifaddr} |
+    Then the step should succeed
+    Then the outputs should contain "10.66"
