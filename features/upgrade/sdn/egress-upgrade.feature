@@ -457,7 +457,7 @@ Feature: Egress compoment upgrade testing
     """
 
   # @author weliang@redhat.com
-  # @case_id OCP-45349
+  # @case_id OCP-54552
   @admin
   @upgrade-check
   @4.13 @4.12
