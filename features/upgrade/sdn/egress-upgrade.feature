@@ -386,7 +386,6 @@ Feature: Egress compoment upgrade testing
   
   # @author weliang@redhat.com
   @admin
-  @flaky
   @upgrade-prepare
   @4.13 @4.12
   @vsphere-ipi
@@ -398,9 +397,9 @@ Feature: Egress compoment upgrade testing
   @heterogeneous @arm64 @amd64
   @hypershift-hosted
   Scenario: Check sdn2ovn egressip is functional post upgrade - prepare
+    Given I switch to cluster admin pseudo user
     Given the env is using "OpenShiftSDN" networkType
     Given I save ipecho url to the clipboard
-    Given I switch to cluster admin pseudo user
     Given I store the schedulable workers in the :workers clipboard
     Given I store a random unused IP address from the reserved range to the clipboard
     And evaluation of `lambda { |i| "#{i.to_s}/#{i.prefix.to_s}" }.call(IPAddr.new("<%= cb.subnet_range %>"))` is stored in the :valid_subnet clipboard
@@ -460,7 +459,6 @@ Feature: Egress compoment upgrade testing
   # @author weliang@redhat.com
   # @case_id OCP-45349
   @admin
-  @flaky
   @upgrade-check
   @4.13 @4.12
   @vsphere-ipi
@@ -472,20 +470,21 @@ Feature: Egress compoment upgrade testing
   @heterogeneous @arm64 @amd64
   @hypershift-hosted
   Scenario: Check sdn2ovn egressip is functional post upgrade
+  Given I switch to cluster admin pseudo user
   Given the cluster is migrated from sdn
   Given I save ipecho url to the clipboard
-  Given I switch to cluster admin pseudo user
+  
   #Get configured EgressIPs
   When I run the :get admin command with:
-    | resource       | egressip             |
-    | resource_name  | egressip-sdn2ovn-egressip-upgrade1    |
-    | o              | jsonpath={.status.items[*]} |
+    | resource       | egressip                           |
+    | resource_name  | egressip-sdn2ovn-egressip-upgrade1 |
+    | o              | jsonpath={.status.items[*]}        |
   Then the step should succeed
   And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip1 clipboard
   When I run the :get admin command with:
-    | resource       | egressip            |
-    | resource_name  | egressip-sdn2ovn-egressip-upgrade2    |
-    | o              | jsonpath={.status.items[*]} |
+    | resource       | egressip                           |
+    | resource_name  | egressip-sdn2ovn-egressip-upgrade2 |
+    | o              | jsonpath={.status.items[*]}        |
   Then the step should succeed
   And evaluation of `@result[:response].chomp.match(/\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}/)` is stored in the :egress_ip2 clipboard
   When I use the "sdn2ovn-egressip-upgrade1" project
@@ -504,9 +503,9 @@ Feature: Egress compoment upgrade testing
     | curl | -s | --connect-timeout | 5 | <%= cb.ipecho_url %> |
   Then the step should succeed
   And the output should contain "<%= cb.egress_ip2 %>"
+  
   # Remove label from egressip node and delete egress ip object
   Given admin ensures "egressip" egress_ip is deleted after scenario
-
   When I run the :get admin command with:
     | resource       | node                               |
     | l              | k8s.ovn.org/egress-assignable      |
@@ -515,13 +514,11 @@ Feature: Egress compoment upgrade testing
   And evaluation of `@result[:response].split(" ")` is stored in the :egress_node clipboard
   When I run the :label admin command with:
     | resource | node                               |
-    | name     | <%= cb.egress_node[0] %>              |
+    | name     | <%= cb.egress_node[0] %>           |
     | key_val  | k8s.ovn.org/egress-assignable-     |
   Then the step should succeed
     When I run the :label admin command with:
     | resource | node                               |
-    | name     | <%= cb.egress_node[1] %>              |
+    | name     | <%= cb.egress_node[1] %>           |
     | key_val  | k8s.ovn.org/egress-assignable-     |
   Then the step should succeed
-  
-  
