@@ -1,4 +1,4 @@
-Feature: SDN update joint network CIDR migration testing
+Feature: SDN2ovn migration testing
 
   # @author weliang@redhat.com
   @admin
