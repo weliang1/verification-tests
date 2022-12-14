@@ -11,10 +11,7 @@ end
 
 Given /^the joint network CIDR is updateded in the node "([^"]*)"$/ do | node_name |
   ensure_admin_tagged
-  @result1 = admin.cli_exec(:get, resource: "node/#{node_name}")
-  def_inf1 = @result1[:response]
-  logger.info "The node's default interface is #{def_inf1}"
-  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.metadata.annotations.k8s\.ovn\.org/node-gateway-router-lrp-ifaddr}")
+  @result = admin.cli_exec(:get, resource: "node/#{node_name}", output: "jsonpath={.metadata.annotations["k8s.ovn.org/node-gateway-router-lrp-ifaddr"]}")
   def_inf = @result[:response]
   logger.info "The node's default interface is #{def_inf}"
   raise "Failed to install load-sctp-module" unless @result[:success]
