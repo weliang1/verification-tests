@@ -18,9 +18,6 @@ module BushSlicer
       return rr.dig('status', 'relatedObjects')
     end
 
-  end
-end
-
 def wait_till_ready(user, seconds)
   res = nil
   iterations = 0
@@ -38,6 +35,6 @@ def ready?(user: nil, cached: false, quiet: false)
   self.condition(type: 'Available', cached: false)['status'] == 'True'
 end
 
-end
+ end
 end
 
