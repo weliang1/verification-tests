@@ -207,3 +207,30 @@ Given /^operator #{QUOTED} becomes #{NO_SPACE_STR}(?: within #{NUMBER} seconds)?
     logger.dedup_flush
   end
 end
+
+Given /^I wait(?: up to #{NUMBER} minutes)? for all clusteroperators to be ready$/ do |timeout_in_minutes|
+  ensure_admin_tagged
+  timeout_in_minutes ||= 30
+  seconds = Integer(timeout_in_minutes) * 60
+  clusteroperators = BushSlicer::ClusterOperator.list(user: admin)
+  # success = wait_for(seconds) {
+  # }
+  co_hash = {}
+  clusteroperators.each do |co|
+    logger.info("Getting information for #{co.name}...")
+    res = cluster_operator(co.name).wait_till_ready(admin, seconds)
+    co_hash[co.name] = res
+    unless res
+      logger.error("Operator #{co.name} in not READY, terminate early rather than wait for more failures.")
+      break
+    end
+  end
+  cluster_operators_all_ready = co_hash.values.tally[true] == co_hash.count
+  unless cluster_operators_all_ready
+    logger.error("Not all clustersoperators are ready")
+    logger.info("Listing the first clusteroperator detected in the  NOT READY state...")
+    co_hash.each do |co, status|
+      logger.info("#{co} ready status is '#{status}'")
+    end
+  end
+end
