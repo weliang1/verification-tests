@@ -20,3 +20,24 @@ module BushSlicer
 
   end
 end
+
+def wait_till_ready(user, seconds)
+  res = nil
+  iterations = 0
+  start_time = monotonic_seconds
+
+  success = wait_for(seconds) {
+    res = ready?(user: user, quiet: true)
+    iterations = iterations + 1
+    break if res
+  }
+  return res
+end
+
+def ready?(user: nil, cached: false, quiet: false)
+  self.condition(type: 'Available', cached: false)['status'] == 'True'
+end
+
+end
+end
+
