@@ -4,10 +4,11 @@ Feature: OVNKubernetes Windows Container related networking scenarios
   # @case_id OCP-26360
   @admin
   @network-ovnkubernetes
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
   @azure-ipi @aws-ipi
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-26360:SDN Ensure Pods and Service communication across window and linux nodes
     Given the env is using windows nodes
     Given I have a project
@@ -59,11 +60,12 @@ Feature: OVNKubernetes Windows Container related networking scenarios
   @admin
   @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
   @network-ovnkubernetes
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @upgrade-sanity
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-37519:SDN Create Loadbalancer service for a window container
     Given the env is using windows nodes
     Given I have a project
@@ -93,7 +95,10 @@ Feature: OVNKubernetes Windows Container related networking scenarios
     And evaluation of `@result[:response].match(/:(.*)]/)[1]` is stored in the :service_external_ip clipboard
 
     # check the external:ip of loadbalancer can be accessed
+    And I wait up to 150 seconds for the steps to pass:
+    """
     When I execute on the "hello-pod" pod:
       | curl | -s | --connect-timeout | 10 | <%= cb.service_external_ip %> |
     Then the step should succeed
     And the output should contain "Windows Container Web Server"
+    """

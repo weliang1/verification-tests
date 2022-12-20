@@ -45,7 +45,8 @@ Feature: Sriov related scenarios
       | vfID: 4               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/static-sriovnetwork.yaml"
     Given I create sriov resource with following:
@@ -95,7 +96,8 @@ Feature: Sriov related scenarios
       | vfID: 4               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/intelnetdevice.yaml"
     Given I create sriov resource with following:
@@ -137,7 +139,7 @@ Feature: Sriov related scenarios
   Scenario: OCP-24713:SDN NAD can be also updated when networknamespace is change
     Given the sriov operator is running well
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
     And evaluation of `project.name` is stored in the :usr_project1 clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/intelnetdevice.yaml"
     Given I create sriov resource with following:
@@ -183,7 +185,8 @@ Feature: Sriov related scenarios
       | syncStatus: Succeeded |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/<cardname>netdevice.yaml"
     Given I create sriov resource with following:
@@ -218,7 +221,7 @@ Feature: Sriov related scenarios
   Scenario: OCP-24780:SDN NAD will be deleted too when sriovnetwork is deleted
     Given the sriov operator is running well
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
     And evaluation of `project.name` is stored in the :usr_project1 clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/intelnetdevice.yaml"
     Given I create sriov resource with following:
@@ -239,7 +242,7 @@ Feature: Sriov related scenarios
   Scenario: OCP-25287:SDN NAD should be able to restore by sriov operator when it was deleted
     Given the sriov operator is running well
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/intelnetdevice.yaml"
     Given I create sriov resource with following:
@@ -299,7 +302,8 @@ Feature: Sriov related scenarios
       | vfID: 0               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/mlx278netdevice.yaml"
     Given I create sriov resource with following:
@@ -323,8 +327,8 @@ Feature: Sriov related scenarios
     Given admin uses the "openshift-multus" project
     When evaluation of `endpoints('multus-admission-controller').subsets.first.addresses.first.ip.to_s` is stored in the :mac_ip clipboard
     Given admin uses the "openshift-monitoring" project
-    When evaluation of `secret(service_account('prometheus-k8s').get_secret_names.find {|s| s.match('token')}).token` is stored in the :sa_token clipboard
-
+    Given I find a bearer token of the prometheus-k8s service account
+    When evaluation of `service_account('prometheus-k8s').cached_tokens.first` is stored in the :sa_token clipboard
     When I run the :exec admin command with:
       | n                | openshift-monitoring |
       | pod              | prometheus-k8s-0     |
@@ -384,7 +388,8 @@ Feature: Sriov related scenarios
       | vfID: 0               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/mlx278netdevice.yaml"
     Given I create sriov resource with following:
@@ -481,7 +486,8 @@ Feature: Sriov related scenarios
       | vfID: 0               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/mlx278netdevice.yaml"
     Given I create sriov resource with following:
@@ -616,7 +622,8 @@ Feature: Sriov related scenarios
       | vfID: 0               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
+    And the appropriate pod security labels are applied to the namespace
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/mlx278netdevice.yaml"
     Given I create sriov resource with following:
@@ -687,13 +694,14 @@ Feature: Sriov related scenarios
   # @case_id OCP-25321
   @destructive
   @admin
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
   @baremetal-ipi
   @baremetal-upi
   @singlenode
   @proxy @noproxy @disconnected @connected
   @network-ovnkubernetes @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-25321:SDN dpdk for intel card works well
     Given the sriov operator is running well
     Given I obtain test data file "networking/sriov/sriovnetworkpolicy/intel-dpdk.yaml"
@@ -715,7 +723,7 @@ Feature: Sriov related scenarios
       | vfID: 1               |
     """
     Given I switch to the first user
-    And I have a project
+    And I have a project with proper privilege
     And evaluation of `project.name` is stored in the :usr_project clipboard
     Given I obtain test data file "networking/sriov/sriovnetwork/intel-dpdk.yaml"
     Given I create sriov resource with following:

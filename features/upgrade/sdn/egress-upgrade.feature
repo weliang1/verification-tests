@@ -4,12 +4,13 @@ Feature: Egress compoment upgrade testing
   @admin
   @upgrade-prepare
   @4.12 @4.11 @4.10 @4.9 @4.8 @4.7
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @noproxy @connected
   @network-ovnkubernetes @network-openshiftsdn
   @upgrade
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check egressfirewall is functional post upgrade - prepare
     Given I switch to cluster admin pseudo user
     And I run the :new_project client command with:
@@ -44,15 +45,16 @@ Feature: Egress compoment upgrade testing
   @admin
   @upgrade-check
   @4.12 @4.11 @4.10 @4.9 @4.8 @4.7
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @noproxy @connected
   @upgrade
   @network-ovnkubernetes @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check egressfirewall is functional post upgrade
-    Given the cluster is not migration from sdn plugin
     Given I switch to cluster admin pseudo user
+    Given the cluster is not migration from sdn plugin
     And I save egress type to the clipboard
     When I run the :get admin command with:
       | resource | <%= cb.cb_egress_type %>  |
@@ -81,6 +83,7 @@ Feature: Egress compoment upgrade testing
   @upgrade
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check ovn egressip is functional post upgrade - prepare
     Given I switch to cluster admin pseudo user
     And I save ipecho url to the clipboard
@@ -140,6 +143,7 @@ Feature: Egress compoment upgrade testing
   @upgrade
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check ovn egressip is functional post upgrade
     Given I save ipecho url to the clipboard
     Given I switch to cluster admin pseudo user
@@ -184,6 +188,7 @@ Feature: Egress compoment upgrade testing
   @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check sdn egressip is functional post upgrade - prepare
     Given the env is using "OpenShiftSDN" networkType
     Given I save ipecho url to the clipboard
@@ -257,8 +262,10 @@ Feature: Egress compoment upgrade testing
   @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: Check sdn egressip is functional post upgrade
-    Given the cluster is not migration from sdn plugin		
+    Given I switch to cluster admin pseudo user
+    Given the cluster is not migration from sdn plugin
     Given the env is using "OpenShiftSDN" networkType
     Given I run the :get admin command with:
       | resource      | hostsubnet                                  |

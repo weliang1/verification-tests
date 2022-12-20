@@ -180,8 +180,12 @@ check_cluster_utilization_items:
       xpath: //h4[text()='Network transfer']
   - selector:
       xpath: //h4[text()='Pod count']
+  - selector:
+      xpath: //*[@data-test-id='utilization-item']
   scripts:
-  - command: return document.querySelectorAll('h4[data-test="utilization-item-title"]')[4].scrollIntoView(true)
+  - command: |
+      var alltitles = document.querySelectorAll("[data-test-id='utilization-item']")
+      return alltitles[alltitles.length-1].scrollIntoView(true)
     expect_result: ~
 click_cpu_data:
   element:
@@ -669,7 +673,7 @@ click_filesystem_chart:
     selector:
       <<: *filesystem_chart
     op: click
-check_charts_on_deployment_page: {}
+check_charts_on_daemonset_page: {}
 check_charts_on_pod_page:
   elements:
   - selector: &memory_usage_chart
@@ -710,4 +714,4 @@ check_monitoring_dashboard_card:
     selector:
       xpath: //h2[contains(@class,'co-dashboard-card__title') and text()='<card_name>']
     timeout: 60
-check_metrics_under_deployment_observe_tab: {}
+check_charts_on_workload_observe: {}

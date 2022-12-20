@@ -3,12 +3,13 @@
   # @author weliang@redhat.com
   @admin
   @upgrade-prepare
-  @4.12 @4.11 @4.10 @4.9
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
+  @4.13 @4.12 @4.11 @4.10 @4.9
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
   @upgrade
   @network-ovnkubernetes @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
+  @hypershift-hosted
   Scenario: Check the multicast works well after upgrade - prepare
     # create some multicast testing pods
     Given I switch to cluster admin pseudo user
@@ -95,15 +96,16 @@
   # @case_id OCP-44636
   @admin
   @upgrade-check
-  @4.12 @4.11 @4.10 @4.9
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
+  @4.13 @4.12 @4.11 @4.10 @4.9
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
   @upgrade
   @network-ovnkubernetes @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
+  @hypershift-hosted
   Scenario: Check the multicast works well after upgrade
-    Given the cluster is not migration from sdn plugin
     Given I switch to cluster admin pseudo user
+    Given the cluster is not migration from sdn plugin
     When I use the "multicast-upgrade" project
     Given 3 pods become ready with labels:
       | name=mcast-pods |

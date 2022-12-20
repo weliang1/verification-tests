@@ -3,7 +3,7 @@ Feature: SGW<->LGW migration related scenarios
   
   # @author anusaxen@redhat.com
   # @case_id OCP-47561
-  @4.12 @4.11 @4.10 @4.9
+  @4.13 @4.12 @4.11 @4.10 @4.9
   @admin
   @destructive
   @network-ovnkubernetes
@@ -11,6 +11,7 @@ Feature: SGW<->LGW migration related scenarios
   @noproxy @connected
   @vsphere-upi
   @amd64
+  @hypershift-hosted
   Scenario: OCP-47561:SDN SGW <-> LGW migration scenario for vsphere platform
     Given the env is using "OVNKubernetes" networkType
 
@@ -129,13 +130,14 @@ Feature: SGW<->LGW migration related scenarios
  
   # @author anusaxen@redhat.com
   # @case_id OCP-47641
-  @4.12 @4.11 @4.10 @4.9
+  @4.13 @4.12 @4.11 @4.10 @4.9
   @admin
   @destructive
   @network-ovnkubernetes
   @baremetal-upi
   @proxy @noproxy @disconnected @connected
   @amd64
+  @hypershift-hosted
   Scenario: OCP-47641:SDN SGW <-> LGW migration scenario for BM platform
     Given the env is using "OVNKubernetes" networkType
 
@@ -198,15 +200,16 @@ Feature: SGW<->LGW migration related scenarios
 
   # @author weliang@redhat.com
   # @case_id OCP-48066
-  @4.12 @4.11 @4.10
+  @4.13 @4.12 @4.11 @4.10
   @admin
   @destructive
   @network-ovnkubernetes
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @proxy @noproxy @disconnected @connected
   @amd64
+  @hypershift-hosted
   Scenario: OCP-48066:SDN SGW <-> LGW migration scenarios for externalIP
     Given the env is using "OVNKubernetes" networkType
     ######## Prepare Data Pre Migration ############

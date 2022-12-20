@@ -6,16 +6,18 @@ Feature: Logging upgrading related features
   @destructive
   @upgrade-prepare
   @users=upuser1,upuser2
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @azure-upi @aws-upi
+  @4.12 @4.11 @4.10 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @gcp-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @gcp-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @noproxy @connected
   @upgrade
   @network-ovnkubernetes @network-openshiftsdn
   @amd64
+  @hypershift-hosted
   Scenario: Cluster logging checking during cluster upgrade - prepare
-    Given I check if the remaining_resources in woker nodes meet the requirements for logging stack
+    Given logging service is removed successfully
+    And I check if the remaining_resources in woker nodes meet the requirements for logging stack
     Given I switch to the first user
     Given I have "json" log pod in project "logging-upg-prep-1"
     And I have "json" log pod in project "logging-upg-prep-share"
@@ -50,14 +52,15 @@ Feature: Logging upgrading related features
   @destructive
   @upgrade-check
   @users=upuser1,upuser2
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @azure-upi @aws-upi
+  @4.12 @4.11 @4.10 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @gcp-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @gcp-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @noproxy @connected
   @upgrade
   @network-ovnkubernetes @network-openshiftsdn
   @amd64
+  @hypershift-hosted
   Scenario: Cluster logging checking during cluster upgrade
     Given I switch to the first user
     Given I create a project with non-leading digit name

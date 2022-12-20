@@ -30,13 +30,21 @@ Given /^logging operators are installed successfully$/ do
   ensure_admin_tagged
   step %Q/I switch to cluster admin pseudo user/
   step %Q/evaluation of `cluster_version('version').version` is stored in the :ocp_cluster_version clipboard/
-  step %Q/cluster-logging channel name is stored in the :clo_channel clipboard/
-  step %Q/elasticsearch-operator channel name is stored in the :eo_channel clipboard/
 
-  unless project('openshift-operators-redhat').exists?
+  if project('openshift-operators-redhat').exists?
+    @result = admin.cli_exec(:label, resource: "namespace", name: "openshift-operators-redhat", key_val: 'openshift.io/cluster-monitoring=true', overwrite: true)
+    raise "Can't add label openshift.io/cluster-monitoring=true to namespace openshift-operators-redhat" unless @result[:success]
+  else
     eo_namespace_yaml = "#{BushSlicer::HOME}/testdata/logging/eleasticsearch/deploy_via_olm/01_eo-project.yaml"
     @result = admin.cli_exec(:create, f: eo_namespace_yaml)
     raise "Error creating namespace" unless @result[:success]
+  end
+
+  #check clusternetwork plugin name
+  #if it's redhat/openshift-ovs-multitenant, then execute `oc adm pod-network make-projects-global openshift-operators-redhat`
+  if cluster_network("default").exists? && cluster_network('default').plugin_name == "redhat/openshift-ovs-multitenant"
+    @result = admin.cli_exec(:oadm_pod_network_make_projects_global, project: "openshift-operators-redhat")
+    raise "Error making project/openshift-operators-redhat network global" unless @result[:success]
   end
 
   step %Q/I use the "openshift-operators-redhat" project/
@@ -60,6 +68,7 @@ Given /^logging operators are installed successfully$/ do
       # first check packagemanifest exists for elasticsearch-operator
       raise "Required packagemanifest 'elasticsearch-operator' no found!" unless package_manifest('elasticsearch-operator').exists?
       step %Q/elasticsearch-operator catalog source name is stored in the :eo_catsrc clipboard/
+      step %Q/elasticsearch-operator channel name is stored in the :eo_channel clipboard/
       step %Q/I use the "openshift-operators-redhat" project/
       if cb.ocp_cluster_version.include? "4.1."
         # create catalogsourceconfig and subscription for elasticsearch-operator
@@ -90,7 +99,10 @@ Given /^logging operators are installed successfully$/ do
   step %Q/elasticsearch operator is ready/
 
   # Create namespace
-  unless project('openshift-logging').exists?
+  if project('openshift-logging').exists?
+    @result = admin.cli_exec(:label, resource: "namespace", name: "openshift-logging", key_val: 'openshift.io/cluster-monitoring=true', overwrite: true)
+    raise "Can't add label openshift.io/cluster-monitoring=true to namespace openshift-logging" unless @result[:success]
+  else
     namespace_yaml = "#{BushSlicer::HOME}/testdata/logging/clusterlogging/deploy_clo_via_olm/01_clo_ns.yaml"
     @result = admin.cli_exec(:create, f: namespace_yaml)
     raise "Error creating namespace" unless @result[:success]
@@ -109,6 +121,7 @@ Given /^logging operators are installed successfully$/ do
       # first check packagemanifest exists for cluster-logging
       raise "Required packagemanifest 'cluster-logging' no found!" unless package_manifest('cluster-logging').exists?
       step %Q/cluster-logging catalog source name is stored in the :clo_catsrc clipboard/
+      step %Q/cluster-logging channel name is stored in the :clo_channel clipboard/
       step %Q/I use the "openshift-logging" project/
       if cb.ocp_cluster_version.include? "4.1."
         # create catalogsourceconfig and subscription for cluster-logging-operator
@@ -226,6 +239,11 @@ end
 Given /^I wait until fluentd is ready$/ do
   step %Q/logging collector name is stored in the :collector_name clipboard/
   step %Q/I wait for the "<%= cb.collector_name %>" daemon_set to appear up to 300 seconds/
+  success = wait_for(180, interval: 10) {
+    daemon_set(cb.collector_name).replica_counters(cached:false)[:desired]>0 && daemon_set(cb.collector_name).replica_counters[:desired]==daemon_set(cb.collector_name).replica_counters[:ready] && daemon_set(cb.collector_name).replica_counters[:desired]==daemon_set(cb.collector_name).replica_counters[:updated_scheduled]
+  }
+  raise "the collector pods are not ready" unless success
+
   step %Q/#{daemon_set("#{cb.collector_name}").replica_counters[:desired]} pods become ready with labels:/, table(%{
     | logging-infra=#{cb.collector_name} |
   })
@@ -385,8 +403,10 @@ Given /^(cluster-logging|elasticsearch-operator) channel name is stored in the#{
   if (logging_envs.empty?) || (envs.nil?) || (envs[:channel].nil?)
     version = cluster_version('version').version.split('-')[0].split('.').take(2).join('.')
     case version
-    when '4.11'
+    when '4.12'
       cb[cb_name] = "stable"
+    when '4.11'
+      cb[cb_name] = "stable-5.5"
     when '4.10'
       cb[cb_name] = "stable-5.4"
     when '4.9'
@@ -480,28 +500,29 @@ Given /^logging eventrouter is installed in the cluster$/ do
   step %Q/admin ensures "eventrouter" config_map is deleted from the "openshift-logging" project after scenario/
   step %Q/admin ensures "eventrouter" deployment is deleted from the "openshift-logging" project after scenario/
   clo_csv_version = subscription("cluster-logging").current_csv(cached: false)
-  image_version = clo_csv_version.split(".", 2).last.split(/[A-Za-z]/).last
-  if image_version.start_with?("5")
+  clo_version = clo_csv_version.split(".", 2).last.split(/[A-Za-z]/).last
+  if clo_version.start_with?("5")
     # from logging 5.0, the image name is changed to eventrouter-rhel8
     image_name = "eventrouter-rhel8"
   else
     image_name = "logging-eventrouter"
   end
 
-  if image_content_source_policy('brew-registry').exists?
-    registry = image_content_source_policy('brew-registry').mirror_repository[0]
-    if image_version.start_with?("5")
-      # from logging 5.0, the image namespace is changed to openshift-logging
-      image = "#{registry}/rh-osbs/openshift-logging-#{image_name}:v#{image_version}"
-    else
-      image = "#{registry}/rh-osbs/openshift-ose-#{image_name}:v#{image_version}"
-    end
+  image_version = ""
+  # for logging 5.2 and later, use image tag v0.3.0/v0.4.0
+  if (clo_version.include? "5.6") || (clo_version.include? "5.5") || (clo_version.include? "5.4")
+    image_version = "0.4.0"
+  elsif (clo_version.include? "5.3") || (clo_version.include? "5.2")
+    image_version = "0.3.0"
   else
-    # get image registry from CLO
-    clo_image = deployment('cluster-logging-operator').container_spec(name: 'cluster-logging-operator').image
-    registry = clo_image.split(/cluster-logging(.*)/)[0]
-    image = "#{registry}#{image_name}:v#{image_version}"
+    image_version = clo_version
   end
+
+  # get image registry from CLO
+  clo_image = deployment('cluster-logging-operator').container_spec(name: 'cluster-logging-operator').image
+  registry = clo_image.split(/cluster-logging(.*)/)[0]
+  image = "#{registry}#{image_name}:v#{image_version}"
+
   step %Q/I process and create:/, table(%{
     | f | #{BushSlicer::HOME}/testdata/logging/eventrouter/internal_eventrouter.yaml |
     | p | IMAGE=#{image} |
@@ -773,7 +794,11 @@ Given /^I make sure the logging operators match the cluster version$/ do
   step %Q/I use the "openshift-operators-redhat" project/
   eo_current_channel = subscription("elasticsearch-operator").channel(cached: false)
   eo_current_catsrc = subscription("elasticsearch-operator").source
-  if cb.eo_channel != eo_current_channel || cb.eo_catsrc != eo_current_catsrc
+  # in https://gitlab.cee.redhat.com/aosqe/jenkins-jcasc-n/-/blob/master/scripts/OCPQE-11466/upgrade_cluster_logging.sh#L9-10
+  # the channel is set to stable-5.6 when testing on OCP 4.12
+  # to avoid hitting issues like https://issues.redhat.com//browse/OCPQE-8932
+  # skip upgrade when current channel is stable-5.6
+  if eo_current_channel != "stable-5.6" && (cb.eo_channel != eo_current_channel || cb.eo_catsrc != eo_current_catsrc)
     upgrade_eo = true
     step %Q/I upgrade the operator with:/, table(%{
       | namespace    | openshift-operators-redhat |
@@ -789,7 +814,8 @@ Given /^I make sure the logging operators match the cluster version$/ do
   step %Q/I use the "openshift-logging" project/
   clo_current_channel = subscription("cluster-logging").channel(cached: false)
   clo_current_catsrc = subscription("cluster-logging").source
-  if clo_current_channel != cb.clo_channel || cb.clo_catsrc != clo_current_catsrc
+  # skip upgrade when current channel is stable-5.6
+  if clo_current_channel != "stable-5.6" && (clo_current_channel != cb.clo_channel || cb.clo_catsrc != clo_current_catsrc)
     upgrade_clo = true
     step %Q/I upgrade the operator with:/, table(%{
       | namespace    | openshift-logging |

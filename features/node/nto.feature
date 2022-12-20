@@ -4,6 +4,10 @@ Feature: Node Tuning Operator related scenarios
   # @case_id OCP-27491
   @admin
   @destructive
+  @nutanix-ipi @ibmcloud-ipi @alicloud-ipi
+  @nutanix-upi @ibmcloud-upi @alicloud-upi
+  @4.13
+  @hypershift-hosted
   Scenario: OCP-27491:PSAP Node tuning operator: tuning is working - add profile
     # Cleaning after test if some step failed
     Given admin ensures "nf-conntrack-max" tuned is deleted from the "openshift-cluster-node-tuning-operator" project after scenario

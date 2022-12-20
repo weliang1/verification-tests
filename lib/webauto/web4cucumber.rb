@@ -79,7 +79,7 @@ require_relative 'chrome_extension'
       chrome_switches = []
       if ENV.has_key?("http_proxy") || @http_proxy
         # get rid of the heading "http://" that breaks the profile
-        proxy_raw = @http_proxy || ENV["http_proxy"]
+        proxy_raw = (@http_proxy || ENV["http_proxy"]).sub(/(\/)+$/, '')
         proxy = proxy_raw.sub(%r{^.+?://}, "")
         proxy_bypass = "localhost,127.0.0.1"
         firefox_profile.proxy = chrome_caps.proxy = safari_caps.proxy = Selenium::WebDriver::Proxy.new({:http => proxy.sub(%r{^.+?@}, ""), :ssl => proxy.sub(%r{^.+?@}, "")})
@@ -112,8 +112,8 @@ require_relative 'chrome_extension'
       client.open_timeout = 180
       client.read_timeout = 600
       headless
-      # Selenium::WebDriver.logger.level = :debug
-      # Watir.logger.level = :debug
+      #Selenium::WebDriver.logger.level = :debug
+      #Watir.logger.level = :debug
       if @browser_type == :firefox
         logger.info "Launching Firefox Marionette/Geckodriver"
         raise "auth proxy not implemented for Firefox" if proxy_pass
@@ -162,7 +162,7 @@ require_relative 'chrome_extension'
         if @selenium_url
           @browser = Watir::Browser.new :chrome, :http_client=>client, options: options, url: @selenium_url
         else
-          options["goog:chromeOptions"][:args] = chrome_switches
+          options[:args] = chrome_switches
           @browser = Watir::Browser.new :chrome, :http_client=>client, options: options
         end
         logger.info "#{browser.driver.capabilities[:browser_name]} version is #{browser.driver.capabilities[:browser_version]}"

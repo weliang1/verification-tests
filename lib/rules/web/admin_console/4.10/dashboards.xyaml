@@ -159,12 +159,7 @@ check_dashboard_dropdown_items:
   action: check_dashboard_use_method_node
   action: click_dashboard_dropdown
 check_resources_workloads_dashboard:
-  params:
-    dropdown_menu_item: Kubernetes / Compute Resources / Workload
-  action: click_dashboard_dropdown
-  action: click_dashboard_dropdown_item
-  action: change_namespace
-  action: change_workload
+  url: /monitoring/dashboards/grafana-dashboard-k8s-resources-workload?namespace=openshift-console&type=deployment&workload=downloads
   action: check_chart_loaded
   action: check_no_errors_in_charts
 check_resources_pod_dashboard:
@@ -190,8 +185,12 @@ check_cluster_utilization_items:
       xpath: //h4[text()='Network transfer']
   - selector:
       xpath: //h4[text()='Pod count']
+  - selector:
+      xpath: //*[@data-test-id='utilization-item']
   scripts:
-  - command: return document.querySelectorAll('h4[data-test="utilization-item-title"]')[4].scrollIntoView(true)
+  - command: |
+      var alltitles = document.querySelectorAll("[data-test-id='utilization-item']")
+      return alltitles[alltitles.length-1].scrollIntoView(true)
     expect_result: ~
 click_cpu_data:
   element:
@@ -239,6 +238,10 @@ wait_for_consumer_lists_loaded:
 check_has_5_top_consumers:
   scripts:
     - command: return document.querySelectorAll("li.co-utilization-card-popover__consumer-item").length == 5
+      expect_result: true
+check_has_top_consumers:
+  scripts:
+    - command: return document.querySelectorAll("li.co-utilization-card-popover__consumer-item").length >= 1
       expect_result: true
 check_consumer_link_to_node:
   element:
@@ -386,7 +389,7 @@ check_cpu_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_cpu_by_node
@@ -415,7 +418,7 @@ check_memory_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_memory_by_node
@@ -444,7 +447,7 @@ check_filesystem_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_filesystem_by_node
@@ -464,7 +467,7 @@ check_pod_count_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_pod_count_by_node
@@ -495,7 +498,7 @@ check_network_in_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_network_in_by_node
@@ -524,7 +527,7 @@ check_network_out_breakdown_info_when_filter_by_node:
     dropdown_menu_item: By Node
   action: choose_consumer_measure
   action: wait_for_consumer_lists_loaded
-  action: check_has_5_top_consumers
+  action: check_has_top_consumers
   action: check_consumer_link_to_node
   action: check_view_more_link
   action: check_metrics_query_network_out_by_node
@@ -756,7 +759,7 @@ click_filesystem_chart:
     op: click
 check_charts_on_pod_page:
   action: check_charts_on_resource_page
-check_charts_on_deployment_page:
+check_charts_on_daemonset_page:
   action: check_charts_on_resource_page
   action: check_no_errors_in_charts
 check_charts_on_resource_page:
@@ -800,11 +803,11 @@ check_monitoring_dashboard_card:
     selector:
       xpath: //div[contains(@class,'pf-c-card__title') and text()='<card_name>']
     timeout: 60
-check_metrics_under_deployment_observe_tab:
+check_charts_on_workload_observe:
   action: goto_project_topology_page
-  action: open_deployment_sidebar
+  action: open_workload_sidebar
   action: check_metrics_on_observe_tab
-open_deployment_sidebar:
+open_workload_sidebar:
   element:
     selector:
       xpath: //div[contains(text(), '<deployment_name>')]

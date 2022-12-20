@@ -16,6 +16,10 @@ module BushSlicer
           @options = conf[:services, svc_name.to_sym].merge options
         end
 
+        # error checking to make sure the `private` repo is present
+        if @options.nil?
+          raise "\nCan't find polarshift credentials to do REST call.  Please check the `private` repo is cloned into your repo"
+        end
         unless @options[:user]
           Timeout::timeout(120) {
             STDERR.puts "PolarShift user (timeout in 2 minutes): "
@@ -111,6 +115,18 @@ module BushSlicer
         }
       end
 
+      def sync_run(project_id, run_id, with_cases: "full")
+        params = with_cases ? {test_cases: with_cases} : {}
+        Http.request_with_retry(
+          method: :put,
+          url: "#{base_url}project/#{project_id}/run/#{run_id}/replace",
+          params: params,
+          raise_on_error: false,
+          read_timeout: 120,
+          **common_opts
+        )
+      end
+
       def get_run(project_id, run_id, with_cases: "automation")
         params = with_cases ? {test_cases: with_cases} : {}
         Http.request_with_retry(
@@ -172,14 +188,20 @@ module BushSlicer
       end
 
       def create_run_smart(timeout: 360, **opts)
-        res = create_run(**opts)
-        if res[:exitstatus] == 202
-          op_url = JSON.load(res[:response])["operation_result_url"]
-          logger.info "to check operation status manually, you can: " \
-            "curl '#{op_url}' -u user:thepassword"
-          pr = wait_op(url: op_url, timeout: timeout)
-        else
-          raise %Q{got status "#{res[:exitstatus]}" creating a new test run:\n#{res[:response]}}
+        for retries in 1..10 do
+          res = create_run(**opts)
+          if res[:exitstatus] == 202
+            op_url = JSON.load(res[:response])["operation_result_url"]
+            logger.info "to check operation status manually, you can: " \
+              "curl '#{op_url}' -u user:thepassword"
+            pr = wait_op(url: op_url, timeout: timeout)
+          else
+            raise %Q{got status "#{res[:exitstatus]}" creating a new test run:\n#{res[:response]}}
+          end
+          unless pr["status"] == "failed"
+            break
+          end
+          sleep 60
         end
 
         unless pr.dig("properties", "run_id")
@@ -370,7 +392,8 @@ module BushSlicer
           when "queued", "running"
             next
           when "failed"
-            raise "PolarShift operation failed:\n#{res["error"]}"
+            logger.warn "PolarShift operation failed:\n#{res["error"]}"
+            return res
           else
             raise "unknown operation status #{res["status"]}"
           end

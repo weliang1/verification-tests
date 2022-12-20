@@ -4,11 +4,12 @@ Feature: UPI GCP Tests
   # @case_id OCP-34697
   @admin
   @destructive
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
   @gcp-upi
   @network-ovnkubernetes @network-openshiftsdn
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
+  
   Scenario: OCP-34697:ClusterInfrastructure MachineSets in GCP should create Machines in a Shared (XPN) VPC environment
     Given I have an UPI deployment and machinesets are enabled
 
@@ -16,11 +17,12 @@ Feature: UPI GCP Tests
   # @case_id OCP-25034
   @admin
   @destructive
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7
   @gcp-upi
   @proxy @noproxy @disconnected @connected
   @network-ovnkubernetes @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  
   Scenario: OCP-25034:ClusterInfrastructure GCP Scaling OCP Cluster on UPI
     Given I have an UPI deployment and machinesets are enabled
     And I switch to cluster admin pseudo user

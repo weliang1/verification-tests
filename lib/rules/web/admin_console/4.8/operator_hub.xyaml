@@ -497,7 +497,6 @@ check_default_view_is_form_view:
   element:
     selector:
       xpath: //input[@type='radio' and @value='form' and @checked]
-open_edit_form_view: {}
 switch_to_yaml_view:
   params:
     radio_text: yaml
@@ -535,6 +534,7 @@ check_specific_namespace_installation_mode_without_recommended_ns:
     checked_radio_text: OwnNamespace
   action: check_disabled_radio_input
   action: check_checked_radio_input
+check_ns_dont_support_installationmode_warn: {}
 enable_cluster_monitoring:
   element:
     selector:
@@ -685,23 +685,19 @@ check_k8sresource_dropdown_items:
       xpath: //li//span[contains(@class,'co-resource-item__resource-name') and contains(text(),'<item>')]
 check_required_badge_on_operator_installation_page:
   elements:
-  - selector:
-      xpath: //span[contains(@class,'co-resource-item')]//span[contains(text(),'Ditto')]/following::span[contains(text(),'Required')]
-check_required_badge_during_installation:
-  elements:
-  - selector:
-      xpath: //span[contains(@class,'co-resource-item')]//span[contains(text(),'Ditto')]/following::span[contains(text(),'Required')]
+  - selector: &required_badge
+      xpath: //span[@data-test='status-text' and contains(text(),'Required')]
 check_create_operand_button_and_requied_badge_when_ready:
   elements:
   - selector:
-      xpath: //h2[contains(@class,'co-clusterserviceversion-install__heading') and contains(.,'Installed operator') and contains(.,'operand required')]
+      <<: *required_badge
     timeout: 30
   - selector: &create_operand_button
       xpath: //button[contains(.,'Create Ditto') and not(disabled)]
 check_create_operand_button_and_requied_badge_on_csv_details:
   elements:
   - selector:
-      xpath: //h4[contains(@class,'pf-c-alert__title') and contains(.,'required')]
+      xpath: //h4[contains(@class,'pf-c-alert__title') and contains(.,'Ditto required')]
   action: check_operand_button_link
 check_operand_button_link:
   element:

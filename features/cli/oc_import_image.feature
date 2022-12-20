@@ -1,55 +1,5 @@
 Feature: oc import-image related feature
 
-  # @author chaoyang@redhat.com
-  # @case_id OCP-10585
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
-  @upgrade-sanity
-  @singlenode
-  @network-ovnkubernetes @network-openshiftsdn
-  @proxy @noproxy
-  @heterogeneous @arm64 @amd64
-  Scenario: OCP-10585:ImageRegistry Do not create tags for ImageStream if image repository does not have tags
-    When I have a project
-    Given I obtain test data file "image-streams/is_without_tags.json"
-    And I run the :create client command with:
-      | filename | is_without_tags.json |
-    Then the step should succeed
-    When I run the :get client command with:
-      | resource      | imagestreams |
-    Then the output should contain "hello-world"
-    When I run the :get client command with:
-      | resource_name   | hello-world  |
-      | resource        | imagestreams     |
-      | o               | yaml             |
-    And the output should not contain "tags"
-
-  # @author wjiang@redhat.com
-  # @case_id OCP-10721
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
-  @upgrade-sanity
-  @singlenode
-  @network-ovnkubernetes @network-openshiftsdn
-  @proxy @noproxy
-  @heterogeneous @arm64 @amd64
-  Scenario: OCP-10721:ImageRegistry Could not import the tag when reference is true
-    Given I have a project
-    Given I obtain test data file "image-streams/ocp10721.json"
-    When I run the :create client command with:
-      | filename | ocp10721.json |
-    Then the step should succeed
-    Given I wait up to 15 seconds for the steps to pass:
-    """
-    When I run the :get client command with:
-      | resource | imagestreamtags |
-    Then the step should succeed
-    And the output should not contain:
-      | aosqeruby:3.3 |
-    """
-
   # @author wjiang@redhat.com
   # @case_id OCP-11760
   @inactive
@@ -91,14 +41,15 @@ Feature: oc import-image related feature
 
   # @author xiaocwan@redhat.com
   # @case_id OCP-11089
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @upgrade-sanity
   @singlenode
   @proxy @noproxy @connected
   @network-ovnkubernetes @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-11089:ImageRegistry Tags should be added to ImageStream if image repository is from an external docker registry
     Given I have a project
     Given I obtain test data file "image-streams/external.json"
@@ -120,18 +71,19 @@ Feature: oc import-image related feature
 
   # @author geliu@redhat.com
   # @case_id OCP-12765
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @proxy @noproxy @connected
   @network-ovnkubernetes @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-12765:ImageRegistry Allow imagestream request deployment config triggers by different mode('TagreferencePolicy':source/local)
     Given I have a project
     When I run the :tag client command with:
       | source_type | docker                                                |
-      | source      | quay.io/openshifttest/deployment-example:v1-multiarch |
+      | source      | quay.io/openshifttest/deployment-example:v1-1.2.0 |
       | dest        | deployment-example:latest                             |
     Then the step should succeed
     And the "deployment-example" image stream becomes ready
@@ -165,7 +117,7 @@ Feature: oc import-image related feature
     Then the step should succeed
     When I run the :tag client command with:
       | source_type      | docker                                                |
-      | source           | quay.io/openshifttest/deployment-example:v1-multiarch |
+      | source           | quay.io/openshifttest/deployment-example:v1-1.2.0 |
       | dest             | deployment-example:latest                             |
       | reference_policy | local                                                 |
     Then the step should succeed

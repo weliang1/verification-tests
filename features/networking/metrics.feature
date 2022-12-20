@@ -3,13 +3,14 @@ Feature: SDN/OVN metrics related networking scenarios
   # @author anusaxen@redhat.com
   # @case_id OCP-28519
   @admin
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @proxy @noproxy @connected
   @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-28519:SDN Prometheus should be able to monitor kubeproxy metrics
     Given I switch to cluster admin pseudo user
     And I use the "openshift-sdn" project
@@ -43,12 +44,13 @@ Feature: SDN/OVN metrics related networking scenarios
   # @author anusaxen@redhat.com
   # @case_id OCP-16016
   @admin
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @proxy @noproxy @connected
   @network-openshiftsdn
   @heterogeneous @arm64 @amd64
+  @hypershift-hosted
   Scenario: OCP-16016:SDN Should be able to monitor the openshift-sdn related metrics by prometheus
     Given I switch to cluster admin pseudo user
     And I use the "openshift-sdn" project
@@ -84,19 +86,18 @@ Feature: SDN/OVN metrics related networking scenarios
   # @author anusaxen@redhat.com
   # @case_id OCP-37704
   @admin
-  @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
-  @vsphere-ipi @openstack-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi
-  @vsphere-upi @openstack-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi
+  @4.13 @4.12 @4.11 @4.10 @4.9 @4.8 @4.7 @4.6
+  @vsphere-ipi @openstack-ipi @nutanix-ipi @ibmcloud-ipi @gcp-ipi @baremetal-ipi @azure-ipi @aws-ipi @alicloud-ipi
+  @vsphere-upi @openstack-upi @nutanix-upi @ibmcloud-upi @gcp-upi @baremetal-upi @azure-upi @aws-upi @alicloud-upi
   @singlenode
   @network-ovnkubernetes
   @proxy @noproxy @disconnected @connected
   @heterogeneous @arm64 @amd64
   Scenario: OCP-37704:SDN Should be able to monitor various ovnkube-master and ovnkube-node metrics via prometheus
-    Given I switch to cluster admin pseudo user
-    And I use the "openshift-ovn-kubernetes" project
-    And evaluation of `endpoints('ovn-kubernetes-master').subsets.first.addresses.first.ip.to_s` is stored in the :ovn_master_metrics_ep_ip clipboard
+    Given I store kubernetes elected leader pod for ovnkube-master in the :leader_pod clipboard
+    And evaluation of `cb.leader_pod.ip` is stored in the :leader_pod_ip clipboard
     And evaluation of `endpoints('ovn-kubernetes-master').subsets.first.ports.first.port.to_s` is stored in the :ovn_master_metrics_ep_port clipboard
-    And evaluation of `cb.ovn_master_metrics_ep_ip + ':' +cb.ovn_master_metrics_ep_port` is stored in the :ovn_master_metrics_ep clipboard
+    And evaluation of `cb.leader_pod_ip + ':' +cb.ovn_master_metrics_ep_port` is stored in the :ovn_master_metrics_ep clipboard
     
     And evaluation of `endpoints('ovn-kubernetes-node').subsets.first.addresses.first.ip.to_s` is stored in the :ovn_node_metrics_ep_ip clipboard
     And evaluation of `endpoints('ovn-kubernetes-node').subsets.flat_map{ |i| i.ports }.select{ |p| p.name == "metrics" }.first.port.to_s` is stored in the :ovn_node_metrics_ep_port clipboard
