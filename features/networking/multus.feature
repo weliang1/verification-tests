@@ -989,7 +989,7 @@ Feature: Multus-CNI related scenarios
     Given the multus is enabled on the cluster
 
     # Create the net-attach-def via cluster admin
-    Given I have a project
+    Given I have a project with proper privilege
     Given I obtain test data file "networking/multus-cni/NetworkAttachmentDefinitions/runtimeconfig-def-ipandmac.yaml"
     When I run the :create admin command with:
       | f | runtimeconfig-def-ipandmac.yaml |
