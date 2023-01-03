@@ -5,7 +5,7 @@ metadata:
   annotations:
     k8s.v1.cni.cncf.io/networks: '[
       {
-        "name": "runtimeconfig-def",
+        "name": "runtimeconfigdef",
         "ips": [ "192.168.22.2/24" ],
         "mac": "CA:FE:C0:FF:EE:00"
       }
