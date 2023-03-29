@@ -1386,8 +1386,6 @@ Feature: Multus-CNI related scenarios
       | ["metadata"]["namespace"] | <%= project(-1).name %> |
     Then the step should succeed
     Given I use the "<%= project(-2).name %>" project
-    sleep 15 
-    
     # Create a pod in new project consuming net-attach-def from 1st project
     Given I obtain test data file "networking/multus-cni/Pods/generic_multus_pod.yaml"
     And I wait up to 30 seconds for the steps to pass:
