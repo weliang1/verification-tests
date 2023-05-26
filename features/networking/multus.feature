@@ -1,6 +1,5 @@
 Feature: Multus-CNI related scenarios
 
-
   # @author bmeng@redhat.com
   # @case_id OCP-21855
   @flaky
