@@ -1675,7 +1675,7 @@ Feature: Multus-CNI related scenarios
     When I run the :describe client command with:
       | resource | pod                             |
       | name     | macvlan-bridge-whereabouts-pod3 |
-    Then the output should contain "Could not allocate IP in range"
+    Then the output should contain "Could allocate IP in range"
     """
     
 
