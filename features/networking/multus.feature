@@ -1677,6 +1677,7 @@ Feature: Multus-CNI related scenarios
       | name     | macvlan-bridge-whereabouts-pod3 |
     Then the output should contain "Could not allocate IP in range"
     """
+    sleep 1000000
 
   # @author weliang@redhat.com
   # @case_id OCP-33579
