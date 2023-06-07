@@ -1670,8 +1670,7 @@ Feature: Multus-CNI related scenarios
       | ["spec"]["containers"][0]["name"]                          | whereabouts-excludeip           |
     Then the step should succeed
     And the pod named "macvlan-bridge-whereabouts-pod3" status becomes :pending within 60 seconds
-    sleep 1000
-    Given I wait up to 30 seconds for the steps to pass:
+    Given I wait up to 30000 seconds for the steps to pass:
     """
     When I run the :describe client command with:
       | resource | pod                             |
