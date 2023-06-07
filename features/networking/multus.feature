@@ -1670,6 +1670,7 @@ Feature: Multus-CNI related scenarios
       | ["spec"]["containers"][0]["name"]                          | whereabouts-excludeip           |
     Then the step should succeed
     And the pod named "macvlan-bridge-whereabouts-pod3" status becomes :pending within 60 seconds
+    sleep 1000
     Given I wait up to 30 seconds for the steps to pass:
     """
     When I run the :describe client command with:
@@ -1677,7 +1678,7 @@ Feature: Multus-CNI related scenarios
       | name     | macvlan-bridge-whereabouts-pod3 |
     Then the output should contain "Could not allocate IP in range"
     """
-    sleep 1000000
+    
 
   # @author weliang@redhat.com
   # @case_id OCP-33579
