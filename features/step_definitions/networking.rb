@@ -584,7 +584,7 @@ Given /^the multus is enabled on the cluster$/ do
   success = wait_for(120, interval: 10)  {
     desired_multus_replicas = daemon_set('multus', project('openshift-multus')).replica_counters(user: admin)[:desired]
     available_multus_replicas = daemon_set('multus', project('openshift-multus')).replica_counters(user: admin)[:available]
-    if (desired_multus_replicas == available_multus_replicas || desired_multus_replicas > env.nodes.count) && available_multus_replicas != 0
+    if (desired_multus_replicas == available_multus_replicas || desired_multus_replicas >= env.nodes.count) && available_multus_replicas != 0
       true
     else
       logger.info("Multus is not running correctly, continue checking")
