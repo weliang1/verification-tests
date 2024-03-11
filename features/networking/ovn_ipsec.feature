@@ -215,15 +215,12 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
 
-   Given I wait up to 120 seconds for the steps to pass:
+    Given I wait up to 600 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for network operator is :True
-    """
-    Given I wait up to 400 seconds for the steps to pass:
-    """
-    Given the status of condition "Progressing" for network operator is :False
-    Given the status of condition "Progressing" for "service-catalog-apiserver" operator is :False
-    And OVN is functional on the cluster
+    Given the status of condition "Degraded" for network operator is: False
+    Given the status of condition "Progressing" for network operator is: False
+    Given the status of condition "Available" for network operator is: True
+    Given the status of condition "Available" for "openshift-apiserver" operator is: True
     """
 
     Given I have a project with proper privilege
@@ -274,15 +271,12 @@ Feature: OVNKubernetes IPsec related networking scenarios
     # Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
-    Given I wait up to 120 seconds for the steps to pass:
+    Given I wait up to 600 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for network operator is :True
-    """
-    Given I wait up to 900 seconds for the steps to pass:
-    """
-    Given the status of condition "Progressing" for network operator is :False
-    Given the status of condition "Progressing" for "service-catalog-apiserver" operator is :False
-    And OVN is functional on the cluster
+    Given the status of condition "Degraded" for network operator is: False
+    Given the status of condition "Progressing" for network operator is: False
+    Given the status of condition "Available" for network operator is: True
+    Given the status of condition "Available" for "openshift-apiserver" operator is: True
     """
     
     
