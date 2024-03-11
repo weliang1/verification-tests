@@ -217,11 +217,11 @@ Feature: OVNKubernetes IPsec related networking scenarios
 
    Given I wait up to 120 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for "network operator" is :True
+    Given the status of condition "Progressing" for network operator is :True
     """
     Given I wait up to 400 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for "network operator" is :False
+    Given the status of condition "Progressing" for network operator is :False
     Given the status of condition "Progressing" for "service-catalog-apiserver" operator is :False
     And OVN is functional on the cluster
     """
@@ -276,11 +276,11 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
     Given I wait up to 120 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for "network operator" is :True
+    Given the status of condition "Progressing" for network operator is :True
     """
     Given I wait up to 900 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for "network operator" is :False
+    Given the status of condition "Progressing" for network operator is :False
     Given the status of condition "Progressing" for "service-catalog-apiserver" operator is :False
     And OVN is functional on the cluster
     """
