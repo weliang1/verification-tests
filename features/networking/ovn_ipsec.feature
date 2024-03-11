@@ -217,7 +217,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
 
     Given I wait up to 600 seconds for the steps to pass:
     """
-    Given the status of condition "Degraded" for network operator is: False
+    Given the status of condition "Progressing" for network operator is: True
     Given the status of condition "Progressing" for network operator is: False
     Given the status of condition "Available" for network operator is: True
     Given the status of condition "Available" for "openshift-apiserver" operator is: True
@@ -273,7 +273,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
     Given I wait up to 600 seconds for the steps to pass:
     """
-    Given the status of condition "Degraded" for network operator is: False
+    Given the status of condition "Progressing" for network operator is: True
     Given the status of condition "Progressing" for network operator is: False
     Given the status of condition "Available" for network operator is: True
     Given the status of condition "Available" for "openshift-apiserver" operator is: True
