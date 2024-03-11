@@ -217,9 +217,9 @@ Feature: OVNKubernetes IPsec related networking scenarios
 
     Given I wait up to 300 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for network operator is: True
-    Given the status of condition "Progressing" for network operator is: False
-    Given the status of condition "Progressing" for "openshift-apiserver" operator is: False
+    Given the status of condition "Progressing" for network operator is :True
+    Given the status of condition "Progressing" for network operator is :False
+    Given the status of condition "Progressing" for "openshift-apiserver" operator is :False
     """
 
     Given I have a project with proper privilege
@@ -272,9 +272,9 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
     Given I wait up to 300 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for network operator is: True
-    Given the status of condition "Progressing" for network operator is: False
-    Given the status of condition "Progressing" for "openshift-apiserver" operator is: False
+    Given the status of condition "Progressing" for network operator is :True
+    Given the status of condition "Progressing" for network operator is :False
+    Given the status of condition "Progressing" for "openshift-apiserver" operator is :False
     """
     
     
