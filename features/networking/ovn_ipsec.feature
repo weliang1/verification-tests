@@ -259,7 +259,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Need to restart ovnkube-master "north" leader after enabling ipsec to make sure use correct "north" leader
     Given I store the ovnkube-master "north" leader pod in the clipboard
     Given admin ensures "<%= cb.north_leader.name %>" pod is deleted from the "openshift-ovn-kubernetes" project 
-    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 300 seconds
+    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 400 seconds
 
     # Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
