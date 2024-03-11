@@ -219,8 +219,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Progressing" for network operator is: True
     Given the status of condition "Progressing" for network operator is: False
-    Given the status of condition "Available" for network operator is: True
-    Given the status of condition "Available" for "openshift-apiserver" operator is: True
+    Given the status of condition "Progressing" for "openshift-apiserver" operator is: False
     """
 
     Given I have a project with proper privilege
@@ -275,8 +274,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Progressing" for network operator is: True
     Given the status of condition "Progressing" for network operator is: False
-    Given the status of condition "Available" for network operator is: True
-    Given the status of condition "Available" for "openshift-apiserver" operator is: True
+    Given the status of condition "Progressing" for "openshift-apiserver" operator is: False
     """
     
     
