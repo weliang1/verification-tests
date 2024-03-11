@@ -265,8 +265,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
 
-    Given I switch to the first user
-    And I use the "<%= cb.hello_pod_project %>" project
+
     #Check NO ESP traffic between two pods crossing nodes after disabling IPsec
     Given I wait up to 90 seconds for the steps to pass:
     """
