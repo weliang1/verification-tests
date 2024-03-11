@@ -257,10 +257,15 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
 
     #Need to restart ovnkube-master "north" leader after enabling ipsec to make sure use correct "north" leader
+    Given I store the ovnkube-master "north" leader pod in the clipboard for "pod" using node "<%= cb.pod_node %>"
+    And evaluation of `pod.node_name` is stored in the :ovn_nb_leader_node clipboard
+    Given I use the "<%= cb.ovn_nb_leader_node %>" node
+    And I run commands on the host:
+      | pkill -f OVN_Northbound |
+    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
+    # Making sure the pod entries are synced again when NB db is re-created
     Given I store the ovnkube-master "north" leader pod in the clipboard
-    Given admin ensures "<%= cb.north_leader.name %>" pod is deleted from the "openshift-ovn-kubernetes" project    
-    Given I store the ovnkube-master "north" leader pod in the clipboard
-    #Check "north" leader return ipsec enabled/ture information
+    #Check "north" leader return ipsec disabled/false information
     Given I wait up to 90 seconds for the steps to pass:
     """
     And admin executes on the pod "northd" container:
@@ -284,14 +289,20 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     
     #Need to restart ovnkube-master "north" leader after enabling ipsec to make sure use correct "north" leader
-    Given I store the ovnkube-master "north" leader pod in the clipboard
-    Given admin ensures "<%= cb.north_leader.name %>" pod is deleted from the "openshift-ovn-kubernetes" project    
+    Given I store the ovnkube-master "north" leader pod in the clipboard for "pod" using node "<%= cb.pod_node %>"
+    And evaluation of `pod.node_name` is stored in the :ovn_nb_leader_node clipboard
+    Given I use the "<%= cb.ovn_nb_leader_node %>" node
+    And I run commands on the host:
+      | pkill -f OVN_Northbound |
+    And admin waits for all pods in the "openshift-ovn-kubernetes" project to become ready up to 120 seconds
+    # Making sure the pod entries are synced again when NB db is re-created
     Given I store the ovnkube-master "north" leader pod in the clipboard
     #Check "north" leader return ipsec disabled/false information
     Given I wait up to 90 seconds for the steps to pass:
     """
     And admin executes on the pod "northd" container:
       | bash | -c | ovn-nbctl --no-leader-only get nb_global . ipsec \| grep false |
+    Then the step should succeed
     And the output should contain "false"
     """
    
