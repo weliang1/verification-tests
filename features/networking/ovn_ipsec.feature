@@ -259,3 +259,18 @@ Feature: OVNKubernetes IPsec related networking scenarios
     #Need to restart ovnkube-master "north" leader after enabling ipsec to make sure use correct "north" leader
     Given I store the ovnkube-master "north" leader pod in the clipboard
     Given admin ensures "<%= cb.north_leader.name %>" pod is deleted from the "openshift-ovn-kubernetes" project 
+
+    # Disable ipsec through CNO
+    Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
+      | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
+
+    Given I switch to the first user
+    And I use the "<%= cb.hello_pod_project %>" project
+    #Check NO ESP traffic between two pods crossing nodes after disabling IPsec
+    Given I wait up to 90 seconds for the steps to pass:
+    """
+    When admin executes on the "<%= cb.hello_pod_worker1 %>" pod:
+      | bash | -c | timeout  --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
+    Then the step should succeed
+    And the output should not contain "ESP"
+    """
