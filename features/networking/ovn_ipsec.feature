@@ -284,6 +284,14 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Available" for "openshift-apiserver" operator is: True
     """
+    Given I wait up to 120 seconds for the steps to pass:
+    """
+    Given the status of condition "Available" for "monitoring" operator is: True
+    """
+    Given I wait up to 120 seconds for the steps to pass:
+    """
+    Given the status of condition "Available" for "authentication" operator is: True
+    """
 
     Given I switch to the first user
     And I use the "<%= cb.hello_pod_project %>" project
