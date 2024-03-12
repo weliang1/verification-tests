@@ -283,14 +283,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     
     
     Given I switch to the first user
-    Given I obtain test data file "networking/pod-for-ping.json"
-    When I run oc create over "pod-for-ping.json" replacing paths:
-      | ["spec"]["nodeName"] | <%= cb.workers[1].name %> |
-      | ["metadata"]["name"] | pod-worker1               |
-    Then the step should succeed
-    And a pod becomes ready with labels:
-      | name=hello-pod |
-    And evaluation of `pod.ip_url` is stored in the :test_pod_worker1 clipboard
+
 
     Given I obtain test data file "networking/pod-for-ping.json"
     When I run oc create over "pod-for-ping.json" replacing paths:
