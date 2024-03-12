@@ -215,7 +215,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
 
-    Given I wait up to 300 seconds for the steps to pass:
     Given I wait up to 160 seconds for the steps to pass:
     """
     Given the status of condition "Progressing" for network operator is :True
