@@ -211,7 +211,8 @@ Feature: OVNKubernetes IPsec related networking scenarios
     And the IPsec is disabled on the cluster
     Given I store all worker nodes to the :workers clipboard
     Given the default interface on nodes is stored in the :default_interface clipboard
-
+    Given the master version >= "3.6"
+    """
     #Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
@@ -307,4 +308,5 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | bash | -c | timeout  --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
     Then the step should succeed
     And the output should not contain "ESP"
+    """
     """
