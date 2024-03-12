@@ -284,17 +284,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     
     Given I switch to the first user
 
-
-    Given I obtain test data file "networking/pod-for-ping.json"
-    When I run oc create over "pod-for-ping.json" replacing paths:
-      | ["spec"]["nodeName"]                 | <%= cb.workers[0].name %>                                                                                          |
-      | ["metadata"]["name"]                 | pod-worker0                                                                                                        |
-      | ["spec"]["containers"][0]["command"] | ["bash", "-c", "for f in {0..3600}; do curl <%= cb.test_pod_worker1 %>:8080 ; --connect-timeout 5; sleep 1; done"] |
-    Then the step should succeed
-    #Above command will curl "hello openshift" traffic every 1 second to worker1 test pod which is expected to cause ESP traffic generation across those nodes
-    And a pod becomes ready with labels:
-      | name=hello-pod |
-
     Given I obtain test data file "networking/net_admin_cap_pod.yaml"
     When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
       | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %>   |
