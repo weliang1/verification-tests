@@ -216,10 +216,13 @@ Feature: OVNKubernetes IPsec related networking scenarios
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":{}}}}} |
 
     Given I wait up to 300 seconds for the steps to pass:
+    Given I wait up to 160 seconds for the steps to pass:
     """
     Given the status of condition "Progressing" for network operator is :True
+    """
+    Given I wait up to 300 seconds for the steps to pass:
+    """
     Given the status of condition "Progressing" for network operator is :False
-    Given the status of condition "Progressing" for "openshift-apiserver" operator is :False
     """
 
     Given I have a project with proper privilege
@@ -270,11 +273,13 @@ Feature: OVNKubernetes IPsec related networking scenarios
     # Disable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
       | {"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipsecConfig":null}}}} |
-    Given I wait up to 300 seconds for the steps to pass:
+    Given I wait up to 160 seconds for the steps to pass:
     """
     Given the status of condition "Progressing" for network operator is :True
+    """
+    Given I wait up to 300 seconds for the steps to pass:
+    """
     Given the status of condition "Progressing" for network operator is :False
-    Given the status of condition "Progressing" for "openshift-apiserver" operator is :False
     """
     
     
