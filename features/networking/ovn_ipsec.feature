@@ -288,7 +288,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given I switch to the first user
     And I use the "<%= cb.hello_pod_project %>" project
     #Check ESP traffic between two pods crossing nodes after enabling IPsec
-    Given I wait up to 90 seconds for the steps to pass:
+    Given I wait up to 180 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hello_pod_worker1 %>" pod:
       | bash | -c | timeout  --preserve-status 2 tcpdump -v -i <%= cb.default_interface %> esp |
