@@ -208,6 +208,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
   @singlenode
   Scenario: OCP-40569:SDN Allow enablement/disablement ipsec at runtime
     Given the env is using "OVNKubernetes" networkType
+    And the IPsec is disabled on the cluster
     Given I store all worker nodes to the :workers clipboard
     Given the default interface on nodes is stored in the :default_interface clipboard
 
