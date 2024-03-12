@@ -296,6 +296,8 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Available" for "console" operator is: True
     """
+    Given 120 seconds have passed
+    Given the status of condition "Available" for "authentication" operator is: True
 
     Given I switch to the first user
     And I use the "<%= cb.hello_pod_project %>" project
