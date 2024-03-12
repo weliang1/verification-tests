@@ -281,19 +281,6 @@ Feature: OVNKubernetes IPsec related networking scenarios
     Given the status of condition "Progressing" for network operator is :False
     """
     
-    
-    Given I switch to the first user
-
-    Given I obtain test data file "networking/net_admin_cap_pod.yaml"
-    When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
-      | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %>   |
-      | ["metadata"]["namespace"]                                  | <%= cb.hello_pod_project %> |
-      | ["metadata"]["name"]                                       | hostnw-pod-worker1          |
-      | ["spec"]["containers"][0]["securityContext"]["privileged"] | true                        |
-    Then the step should succeed
-    And a pod becomes ready with labels:
-      | name=network-pod |
-    And evaluation of `pod.name` is stored in the :hello_pod_worker1 clipboard
 
     #Check ESP traffic between two pods crossing nodes after enabling IPsec
     Given I wait up to 90 seconds for the steps to pass:
