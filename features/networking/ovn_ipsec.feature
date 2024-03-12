@@ -283,9 +283,37 @@ Feature: OVNKubernetes IPsec related networking scenarios
     
     
     Given I switch to the first user
+    Given I obtain test data file "networking/pod-for-ping.json"
+    When I run oc create over "pod-for-ping.json" replacing paths:
+      | ["spec"]["nodeName"] | <%= cb.workers[1].name %> |
+      | ["metadata"]["name"] | pod-worker1               |
+    Then the step should succeed
+    And a pod becomes ready with labels:
+      | name=hello-pod |
+    And evaluation of `pod.ip_url` is stored in the :test_pod_worker1 clipboard
 
+    Given I obtain test data file "networking/pod-for-ping.json"
+    When I run oc create over "pod-for-ping.json" replacing paths:
+      | ["spec"]["nodeName"]                 | <%= cb.workers[0].name %>                                                                                          |
+      | ["metadata"]["name"]                 | pod-worker0                                                                                                        |
+      | ["spec"]["containers"][0]["command"] | ["bash", "-c", "for f in {0..3600}; do curl <%= cb.test_pod_worker1 %>:8080 ; --connect-timeout 5; sleep 1; done"] |
+    Then the step should succeed
+    #Above command will curl "hello openshift" traffic every 1 second to worker1 test pod which is expected to cause ESP traffic generation across those nodes
+    And a pod becomes ready with labels:
+      | name=hello-pod |
 
-    #Check NO ESP traffic between two pods crossing nodes after disabling IPsec
+    Given I obtain test data file "networking/net_admin_cap_pod.yaml"
+    When I run oc create as admin over "net_admin_cap_pod.yaml" replacing paths:
+      | ["spec"]["nodeName"]                                       | <%= cb.workers[1].name %>   |
+      | ["metadata"]["namespace"]                                  | <%= cb.hello_pod_project %> |
+      | ["metadata"]["name"]                                       | hostnw-pod-worker1          |
+      | ["spec"]["containers"][0]["securityContext"]["privileged"] | true                        |
+    Then the step should succeed
+    And a pod becomes ready with labels:
+      | name=network-pod |
+    And evaluation of `pod.name` is stored in the :hello_pod_worker1 clipboard
+
+    #Check ESP traffic between two pods crossing nodes after enabling IPsec
     Given I wait up to 90 seconds for the steps to pass:
     """
     When admin executes on the "<%= cb.hello_pod_worker1 %>" pod:
