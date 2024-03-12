@@ -211,7 +211,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     And the IPsec is disabled on the cluster
     Given I store all worker nodes to the :workers clipboard
     Given the default interface on nodes is stored in the :default_interface clipboard
-    Given the master version >= "3.6"
+    Given the master version >= "4.15"
     """
     #Enable ipsec through CNO
     Given as admin I successfully merge patch resource "networks.operator.openshift.io/cluster" with:
