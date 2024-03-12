@@ -282,7 +282,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given I wait up to 180 seconds for the steps to pass:
     """
-    Given the status of condition "Progressing" for "openshift-apiserver" operator is :False
+    Given the status of condition "Progressing" for "openshift-apiserver" operator is: False
     """
 
 
