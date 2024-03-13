@@ -219,7 +219,7 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Progressing" for network operator is :True
     """
-    Given I wait up to 480 seconds for the steps to pass:
+    Given I wait up to 360 seconds for the steps to pass:
     """
     Given the status of condition "Progressing" for network operator is :False
     """
@@ -276,16 +276,15 @@ Feature: OVNKubernetes IPsec related networking scenarios
     """
     Given the status of condition "Progressing" for network operator is :True
     """
-    Given I wait up to 480 seconds for the steps to pass:
+    Given I wait up to 360 seconds for the steps to pass:
     """
     Given the status of condition "Progressing" for network operator is :False
     """
-    Given 300 seconds have passed
-    Given I wait up to 120 seconds for the steps to pass:
+    Given I wait up to 300 seconds for the steps to pass:
     """
     Given the status of condition "Available" for "openshift-apiserver" operator is: True
     """
-    Given I wait up to 120 seconds for the steps to pass:
+    Given I wait up to 300 seconds for the steps to pass:
     """
     Given the status of condition "Available" for "authentication" operator is: True
     """
