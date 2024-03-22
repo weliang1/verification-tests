@@ -437,7 +437,7 @@ Feature: Multus-CNI related scenarios
     Then the step should succeed
     #Creating no-vlan pod absorbing above net-attach-def
     Given I store the ready and schedulable workers in the :nodes clipboard
-    And CNI vlan info is obtained on the "<%= cb.nodes[0].name %>" node
+    And CNI vlan info is obtained on the "<%= cb.nodes[1].name %>" node
     And evaluation of `@result[:parsed]` is stored in the :vlans_before clipboard
     # force pod onto the node we already got CNI vlan information for
     Given I obtain test data file "networking/multus-cni/Pods/generic_multus_pod.yaml"
