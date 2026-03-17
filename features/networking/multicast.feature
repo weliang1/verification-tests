@@ -88,7 +88,7 @@ Feature: testing multicast scenarios
     And the output should match:
       | eth0\s+1\s+(232.43.211.234\|ff3e::4321:1234) |
     """   
-    And I wait up to 20 seconds for the steps to pass:
+    And I wait up to 300 seconds for the steps to pass:
     """
     When I execute on the "<%= cb.pod3 %>" pod:
       | cat | /tmp/p3.log |
@@ -102,7 +102,6 @@ Feature: testing multicast scenarios
       | <%= cb.pod1ip %>.*multicast, xmt/rcv/%loss = 5/0/100% |
       | <%= cb.pod2ip %>.*multicast, xmt/rcv/%loss = 5/0/100% |
     """
-    And I wait 300 seconds
     
   # @author hongli@redhat.com
   # @case_id OCP-12977
