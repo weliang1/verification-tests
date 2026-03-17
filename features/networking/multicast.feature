@@ -102,6 +102,7 @@ Feature: testing multicast scenarios
       | <%= cb.pod1ip %>.*multicast, xmt/rcv/%loss = 5/0/100% |
       | <%= cb.pod2ip %>.*multicast, xmt/rcv/%loss = 5/0/100% |
     """
+    And I wait 300 seconds
     
   # @author hongli@redhat.com
   # @case_id OCP-12977
