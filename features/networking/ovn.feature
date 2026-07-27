@@ -455,20 +455,25 @@ Feature: OVN related networking scenarios
     When I store the ovnkube-master "south" leader pod in the clipboard
     Then the step should succeed
 
-    # ipv6 uses ip6tables binary
-    Given evaluation of `(cb.south_leader.ip.include? ":") ? "ip6tables" : "iptables"` is stored in the :iptables_command clipboard
-
     Given I store the masters in the clipboard excluding "<%= cb.south_leader.node_name %>"
     And I use the "<%= cb.nodes[0].name %>" node
-    # make sure to unblock after the test
+    # Create custom nftables table and chain for test isolation
+    # This avoids relying on system filter/INPUT chain which may not exist in nftables-only systems
+    When I run commands on the host:
+      | nft | add | table | inet | ocp-testing |
+    Then the step should succeed
+    When I run commands on the host:
+      | bash | -c | nft add chain inet ocp-testing input '{ type filter hook input priority filter ; }' |
+    Then the step should succeed
+    # make sure to clean up custom table after the test
     And I register clean-up steps:
     """
     When I run commands on the host:
-      | <%= cb.iptables_command %> -t filter -D INPUT -s <%= cb.south_leader.ip %> -p tcp --dport 9643:9644 -j DROP |
+      | nft | delete | table | inet | ocp-testing |
     """
     # don't block all traffic that breaks etcd, just block the OVN ssl ports
     When I run commands on the host:
-      | <%= cb.iptables_command %> -t filter -A INPUT -s <%= cb.south_leader.ip %> -p tcp --dport 9643:9644 -j DROP |
+      | bash | -c | nft add rule inet ocp-testing input ip saddr <%= cb.south_leader.ip %> tcp dport 9643-9644 drop |
     Then the step should succeed
 
     # election timer is 1 second by default but the RAFT JSON-RPC probe might take 5 seconds to notice
@@ -484,8 +489,9 @@ Feature: OVN related networking scenarios
     Then the step should succeed
     """
     # try to get the isolated leader for debug, it might not work
+    # Delete the custom table which removes all rules in it
     When I run commands on the host:
-      | <%= cb.iptables_command %> -t filter -D INPUT -s <%= cb.south_leader.ip %> -p tcp --dport 9643:9644 -j DROP |
+      | nft | delete | table | inet | ocp-testing |
     # wait for OVN to reconverge
     # wait 120 seconds for convergence due to election timer as described above.
     And I wait up to 120 seconds for the steps to pass:
