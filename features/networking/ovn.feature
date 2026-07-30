@@ -455,6 +455,9 @@ Feature: OVN related networking scenarios
     When I store the ovnkube-master "south" leader pod in the clipboard
     Then the step should succeed
 
+    # Determine IP family for nftables (ip for IPv4, ip6 for IPv6)
+    Given evaluation of `(cb.south_leader.ip.include? ":") ? "ip6" : "ip"` is stored in the :ip_family clipboard
+
     Given I store the masters in the clipboard excluding "<%= cb.south_leader.node_name %>"
     And I use the "<%= cb.nodes[0].name %>" node
     # Create custom nftables table and chain for test isolation
@@ -473,7 +476,7 @@ Feature: OVN related networking scenarios
     """
     # don't block all traffic that breaks etcd, just block the OVN ssl ports
     When I run commands on the host:
-      | bash | -c | nft add rule inet ocp-testing input ip saddr <%= cb.south_leader.ip %> tcp dport 9643-9644 drop |
+      | bash | -c | nft add rule inet ocp-testing input <%= cb.ip_family %> saddr <%= cb.south_leader.ip %> tcp dport 9643-9644 drop |
     Then the step should succeed
 
     # election timer is 1 second by default but the RAFT JSON-RPC probe might take 5 seconds to notice
